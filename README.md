@@ -2,7 +2,7 @@
 
 **MyoTools** is a suite of four complementary applications for quantitative skeletal muscle imaging. It provides interactive workflows for muscle-fiber segmentation, fiber typing, myonuclear fusion, and myotube surface measurement.
 
-The current stable suite is **v0.4.1**. Pretrained model weights are distributed separately through [GitHub Releases](https://github.com/BenLair/MyoTools/releases); application packages are distributed only through the `Downloads/` folder of this repository.
+The current stable suite is **v0.4.2**. Pretrained model weights are distributed separately through [GitHub Releases](https://github.com/BenLair/MyoTools/releases); application packages are distributed only through the `Downloads/` folder of this repository.
 
 ## Download and install
 
@@ -28,7 +28,7 @@ Always download the ZIP corresponding to your system and extract it completely. 
 
 Select **Models** from the Hub to download the required pretrained weights. Downloaded files are checked against their published sizes and SHA-256 digests, and placed inside the local `Hub/runtime/models/` directory (where applicable). You may also select a custom model manually inside each application. MyoSurface does not require an external pretrained model.
 
-Model downloads are separate from application downloads. Available model releases include [MyoSeg](https://github.com/BenLair/MyoTools/releases/tag/MyoSeg), [MyoSeg_HE](https://github.com/BenLair/MyoTools/releases/tag/MyoSeg_HE), [MyoClass](https://github.com/BenLair/MyoTools/releases/tag/MyoClass), and [MyoNuclei](https://github.com/BenLair/MyoTools/releases/tag/MyoNuclei). The MyoFuse Svetlana classifier is handled by its own installer.
+Model downloads are separate from application downloads. Available model releases include [MyoSeg](https://github.com/BenLair/MyoTools/releases/tag/MyoSeg-v1.0.0), [MyoSeg_HE](https://github.com/BenLair/MyoTools/releases/tag/MyoSeg_HE-v1.0.0), [MyoClass](https://github.com/BenLair/MyoTools/releases/tag/MyoClass-v1.0.0), and [MyoNuclei](https://github.com/BenLair/MyoTools/releases/tag/MyoNuclei-v1.0.0). The MyoFuse Svetlana classifier is handled by its own installer.
 
 ## Updating and rollback
 
