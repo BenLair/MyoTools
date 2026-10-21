@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "suite_version": "0.4.1",
+  "update_channel": "main",
+  "update_repository": "BenLair/MyoTools",
+  "update_branch": "main",
+  "platform": "windows",
+  "source_ref": null,
+  "applications": [
+    {
+      "id": "myoseg",
+      "version": "1.1.1",
+      "notebook": "MyoSeg/MyoSeg_v1.1.1.ipynb"
+    },
+    {
+      "id": "myoclass",
+      "version": "1.0.1",
+      "notebook": "MyoClass/MyoClass_v1.0.1.ipynb"
+    },
+    {
+      "id": "myofuse",
+      "version": "1.1.0",
+      "notebook": "MyoFuse/Codes/windows/MyoFuse_win_v1.1.0.ipynb"
+    },
+    {
+      "id": "myosurface",
+      "version": "1.0.0",
+      "notebook": "MyoSurface/MyoSurface_v1.0.0.ipynb"
+    }
+  ],
+  "sha256": {
+    "Hub/app_registry.py": "92ef1d7dbd87528c3ab5d890f16e9e7e20c0fb31baa90179aa1f185d33872b22",
+    "Hub/apps.json": "35bf9072fce376163dec99af49cc0861c512011736e63855a421373f9b6f41c1",
+    "Hub/assets/microscopy-sprite.webp": "fd66333d6570614756c2ab5e8a4f6b3f34f751e233fd0cf3fbaa2e1687c00a15",
+    "Hub/assets/myotools-icon.ico": "ca04d9c5d94390c4c7c07d4a26529260dc2baac26ab99cbaf1dd373f659fe3e0",
+    "Hub/check_myotools_env.py": "e53d4c64d53f3ed0f5bf67dd4c134972a2ec043283fc0a379e4ea1f4b2cc5d04",
+    "Hub/installation.py": "95d8149987539c7b75d268f04810238f2c081cfe2071621498bfcd35277a5458",
+    "Hub/launcher.py": "f85d274f9fb6d67b547a4fcb04cb483651bdd498c583e5312c53285c8dcb8389",
+    "Hub/model_manager.py": "85ebffad533505afa479366f7a792c135bc96b12e020dc1abda6cba612d9fe91",
+    "Hub/platforms/windows/bootstrap_miniforge.ps1": "1cbcc5886cd4d66a57cec823497154f8c541dde49e5b0830db2a45d8f32d4ffb",
+    "Hub/platforms/windows/create_shortcut.ps1": "3c9828bddc5125e5bc826af1276251d31172388634437b4e3c614be3d8efefff",
+    "Hub/platforms/windows/environments/myofuse.yml": "4bed9d31186fbb32ce3f69162726526d94fc940bc1063edc8576570f2b201720",
+    "Hub/platforms/windows/environments/myotools.yml": "8bf0ffddbc6f7273c7b791c24424863c6a1da9609f9eb877c8a2367c792e00c4",
+    "Hub/platforms/windows/install.bat": "83ce1593fb9210cb8537c1ea1f653cbe4e94a37c0f6952ddcbf3d9e6e533e510",
+    "Hub/platforms/windows/launch.bat": "77444e4385a614d4be1913c14a0b8b2fea44fdc91d2a854b64abd47333e3ced1",
+    "Hub/platforms/windows/remove_shortcut.ps1": "406ee31fda33f2e42a2d06b9bc3bc6fe1eaf6917b72b88735d5f53d20dd8da17",
+    "Hub/platforms/windows/uninstall.bat": "b657e6f903b74ec917f9e741c8232a78a9807afd3e3f51b13113443d5799cdc9",
+    "Hub/prepare_models.py": "319a4332ff47f43080b7d29cb15107f0616f1ebd8d876b4ceaa29c426700e32b",
+    "Hub/setup_environment.py": "95d013162fc9d3674685691ac54b0810350d275e09ce176c2294750b3801dd09",
+    "Hub/uninstall.py": "7b59497737a89fcb1b86118005e8d1ddb78180218fb61f50cfc0c48185ac2cd4",
+    "Hub/update_page.py": "c9163d0fdc4ba82bd54fb760463bcbf1a5850c74e5399a52bacdaaa2a1bcf428",
+    "Hub/update_policy.py": "86c1825a38ab247cc0cc886b98811f95802fc54d001177856fa3e8029b76a59e",
+    "Hub/update_service.py": "ad10c7b6adb395d5f9e524927a845e991269cfbefa102a7d6c14bd1eb7b901b8",
+    "Hub/update_worker.py": "ce32094e5d60738db8ed6bee1b03c99af621cd916b070784765d33985ec27df9",
+    "Hub/updater.py": "2d95af663ec73c27355c773e524c8229325a49c985dcee15d5abe5b0238edd72",
+    "Hub/user_paths.py": "93db64c7f21fdeeaeb89b8fe6dbacf35ff506e683872bc086294905e8c1a42d4",
+    "INSTALL.bat": "95ddea325a5897eb1351b9ecadd8ab66a2b6e4239eed2caf72540321d36d54c6",
+    "LAUNCH.bat": "91e51897188d2035499032b516200326a19ecc2d580bf10f2049a989c84661fe",
+    "MyoClass/Corrections_napari_MyoClass.py": "d7847a48ab13e052464d9696c03a8cda67c06c82ea27d25ca542d5382db12bd8",
+    "MyoClass/MyoClass_How_to_Use.md": "181d9bf0ecf63c10ea8b6d5abe2c559ab006976af4a493fae5c6c7aaf88be0e1",
+    "MyoClass/MyoClass_v1.0.1.ipynb": "027fae913c3f0395b34e6c91cac7fe59278b1d5614cbeae894c2cea18d1f42f2",
+    "MyoFuse/Codes/windows/MyoFuse_win_v1.1.0.ipynb": "cd7acc5d16adc496e1e23894a4ae751a23cedaa6173cc74b1641bdf5966274c7",
+    "MyoFuse/LICENSE": "fd0ffb582736785f715a184f0c900af2a1bfd0033976000066fb32b4a64c95c1",
+    "MyoFuse/Models/Svetlana/Config.json": "125b1455c6e96b15df236dfb667c61fccd9c6de9caa946117b7dca4b183a3b6f",
+    "MyoFuse/MyoFuse_How_to_Use.md": "38ebaeee49fb6f1714f25ce286c766e1c5d9fbf9ba1202e965a3292758769ed5",
+    "MyoSeg/MyoSeg_How_to_Use.md": "3bcfaca71f69bb1d581a3f32625d1ccd8fd6ecd7c06629400f19dd72366d591f",
+    "MyoSeg/MyoSeg_v1.1.1.ipynb": "94be30a3e938181c10361dc8ac1556bf11abbcf0df7bcf3caad09d293359316c",
+    "MyoSurface/MyoSurface_How_to_Use.md": "3558c889c3a138a15bfb989dc7c1693503f199683760f1255bbe92d4c2620ce8",
+    "MyoSurface/MyoSurface_v1.0.0.ipynb": "9ef6c8a3a58accac0c56025cd57012f43389cb59f9219a2cf679058186daa49b",
+    "README.md": "8ae2dbbcfa644c96a6aaa24ed3d1ae3bdb62befdcb79b53ca83e156c01295130",
+    "UNINSTALL.bat": "a36bca9d59a25f172d0d2967371d9920a2257c725b366fb58b9c5af4da44fea3"
+  }
+}

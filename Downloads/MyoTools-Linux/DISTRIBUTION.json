@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "suite_version": "0.4.1",
+  "update_channel": "main",
+  "update_repository": "BenLair/MyoTools",
+  "update_branch": "main",
+  "platform": "linux",
+  "source_ref": null,
+  "applications": [
+    {
+      "id": "myoseg",
+      "version": "1.1.1",
+      "notebook": "MyoSeg/MyoSeg_v1.1.1.ipynb"
+    },
+    {
+      "id": "myoclass",
+      "version": "1.0.1",
+      "notebook": "MyoClass/MyoClass_v1.0.1.ipynb"
+    },
+    {
+      "id": "myofuse",
+      "version": "1.1.0",
+      "notebook": "MyoFuse/Codes/linux/MyoFuse_linux_v1.1.0.ipynb"
+    },
+    {
+      "id": "myosurface",
+      "version": "1.0.0",
+      "notebook": "MyoSurface/MyoSurface_v1.0.0.ipynb"
+    }
+  ],
+  "sha256": {
+    "Hub/app_registry.py": "92ef1d7dbd87528c3ab5d890f16e9e7e20c0fb31baa90179aa1f185d33872b22",
+    "Hub/apps.json": "66936bac53f0120efeb6399960bb4f4f0a1eadab675ce2359e856e84329dd3c5",
+    "Hub/assets/microscopy-sprite.webp": "fd66333d6570614756c2ab5e8a4f6b3f34f751e233fd0cf3fbaa2e1687c00a15",
+    "Hub/assets/myotools-icon.svg": "9c851095f55d804153704e59f8a64e69bcc53c4759aaaf17267f8aa17b1872dd",
+    "Hub/check_myotools_env.py": "e53d4c64d53f3ed0f5bf67dd4c134972a2ec043283fc0a379e4ea1f4b2cc5d04",
+    "Hub/installation.py": "95d8149987539c7b75d268f04810238f2c081cfe2071621498bfcd35277a5458",
+    "Hub/launcher.py": "f85d274f9fb6d67b547a4fcb04cb483651bdd498c583e5312c53285c8dcb8389",
+    "Hub/model_manager.py": "85ebffad533505afa479366f7a792c135bc96b12e020dc1abda6cba612d9fe91",
+    "Hub/platforms/linux/environments/myofuse.yml": "d136d7028971ec3c5b0b2ff50c98e41653d07788d202b32188682f90ad11d481",
+    "Hub/platforms/linux/environments/myotools.yml": "ad2ab0ae789e0d2890a11e2b12efa345c4a7cd3be08e9912288ed9bc4afc0c6a",
+    "Hub/platforms/linux/install.sh": "7b9a940de9c56581e8965a136e713f1bc46cf861868c7e54a4c7e564b65d2ae6",
+    "Hub/platforms/linux/launch.sh": "415100e9f40b986ef95752f10226c5af23bbf11834a49bef15c5fdecae45b84a",
+    "Hub/platforms/linux/uninstall.sh": "c308500973f13393ee87946f888f2db86513b1906698ccf96809d1edb1ebaebc",
+    "Hub/prepare_models.py": "319a4332ff47f43080b7d29cb15107f0616f1ebd8d876b4ceaa29c426700e32b",
+    "Hub/setup_environment.py": "95d013162fc9d3674685691ac54b0810350d275e09ce176c2294750b3801dd09",
+    "Hub/uninstall.py": "7b59497737a89fcb1b86118005e8d1ddb78180218fb61f50cfc0c48185ac2cd4",
+    "Hub/update_page.py": "c9163d0fdc4ba82bd54fb760463bcbf1a5850c74e5399a52bacdaaa2a1bcf428",
+    "Hub/update_policy.py": "86c1825a38ab247cc0cc886b98811f95802fc54d001177856fa3e8029b76a59e",
+    "Hub/update_service.py": "ad10c7b6adb395d5f9e524927a845e991269cfbefa102a7d6c14bd1eb7b901b8",
+    "Hub/update_worker.py": "ce32094e5d60738db8ed6bee1b03c99af621cd916b070784765d33985ec27df9",
+    "Hub/updater.py": "2d95af663ec73c27355c773e524c8229325a49c985dcee15d5abe5b0238edd72",
+    "Hub/user_paths.py": "93db64c7f21fdeeaeb89b8fe6dbacf35ff506e683872bc086294905e8c1a42d4",
+    "INSTALL.sh": "4bcadc456a1b042913fd98ab14995cfb04c571e177850a71061cfc6ae160f3dc",
+    "LAUNCH.sh": "7730d8609412a1f3486e22e9494cb95fee9f5677f1b87fb64e1497f8356665dc",
+    "MyoClass/Corrections_napari_MyoClass.py": "d7847a48ab13e052464d9696c03a8cda67c06c82ea27d25ca542d5382db12bd8",
+    "MyoClass/MyoClass_How_to_Use.md": "181d9bf0ecf63c10ea8b6d5abe2c559ab006976af4a493fae5c6c7aaf88be0e1",
+    "MyoClass/MyoClass_v1.0.1.ipynb": "027fae913c3f0395b34e6c91cac7fe59278b1d5614cbeae894c2cea18d1f42f2",
+    "MyoFuse/Codes/linux/MyoFuse_linux_v1.1.0.ipynb": "60b7e74965b66068a5f6ce14ee9c4f1f80a2cf5f59808ff4a18b249addf27afb",
+    "MyoFuse/LICENSE": "fd0ffb582736785f715a184f0c900af2a1bfd0033976000066fb32b4a64c95c1",
+    "MyoFuse/Models/Svetlana/Config.json": "125b1455c6e96b15df236dfb667c61fccd9c6de9caa946117b7dca4b183a3b6f",
+    "MyoFuse/MyoFuse_How_to_Use.md": "38ebaeee49fb6f1714f25ce286c766e1c5d9fbf9ba1202e965a3292758769ed5",
+    "MyoSeg/MyoSeg_How_to_Use.md": "3bcfaca71f69bb1d581a3f32625d1ccd8fd6ecd7c06629400f19dd72366d591f",
+    "MyoSeg/MyoSeg_v1.1.1.ipynb": "94be30a3e938181c10361dc8ac1556bf11abbcf0df7bcf3caad09d293359316c",
+    "MyoSurface/MyoSurface_How_to_Use.md": "3558c889c3a138a15bfb989dc7c1693503f199683760f1255bbe92d4c2620ce8",
+    "MyoSurface/MyoSurface_v1.0.0.ipynb": "9ef6c8a3a58accac0c56025cd57012f43389cb59f9219a2cf679058186daa49b",
+    "README.md": "44b903bf19a2f6a836064e4f6963beb441eab215428be68a157d75d5c0b30122",
+    "UNINSTALL.sh": "6113d5b4337ea9628417ff02b94f1048edd5deb428742765f24c6c310bfb7a31"
+  }
+}

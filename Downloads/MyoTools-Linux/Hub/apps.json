@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "suite_version": "0.4.1",
+  "update_channel": "main",
+  "update_repository": "BenLair/MyoTools",
+  "update_branch": "main",
+  "default_mode": "release",
+  "apps": [
+    {
+      "id": "myoseg",
+      "name": "MyoSeg",
+      "description": "Segmentation of muscle fibers · fluorescence and H&E",
+      "environment": "myotools",
+      "directory": "MyoSeg",
+      "pattern": "MyoSeg_v*.ipynb",
+      "release_version": "1.1.1"
+    },
+    {
+      "id": "myoclass",
+      "name": "MyoClass",
+      "description": "Muscle fiber typing and manual review",
+      "environment": "myotools",
+      "directory": "MyoClass",
+      "pattern": "MyoClass*_v*.ipynb",
+      "release_version": "1.0.1"
+    },
+    {
+      "id": "myofuse",
+      "name": "MyoFuse",
+      "description": "Myotube fusion index with Cellpose and Svetlana",
+      "environment": "myofuse_env",
+      "release_version": "1.1.0",
+      "directory": "MyoFuse/Codes/linux",
+      "pattern": "MyoFuse_linux_v*.ipynb"
+    },
+    {
+      "id": "myosurface",
+      "name": "MyoSurface",
+      "description": "Myotube surface coverage quantification",
+      "environment": "myotools",
+      "directory": "MyoSurface",
+      "pattern": "MyoSurface_v*.ipynb",
+      "release_version": "1.0.0"
+    }
+  ]
+}
