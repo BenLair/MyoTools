@@ -1,0 +1,84 @@
+name: Verify and expand stable MyoTools packages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/sync-distribution-folders.yml
+      - Downloads/MyoTools-Linux.zip
+      - Downloads/MyoTools-Windows.zip
+      - Downloads/SHA256SUMS.txt
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stable-distribution-folders
+  cancel-in-progress: false
+
+jobs:
+  verify-and-expand:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - name: Verify signed-off archive contents and create extracted folders
+        run: |
+          python - <<'PY'
+          import hashlib, json, re, stat, zipfile
+          from pathlib import Path, PurePosixPath
+          folder=Path('Downloads')
+          checks={}
+          for line in (folder/'SHA256SUMS.txt').read_text().splitlines():
+              match=re.fullmatch(r'([0-9a-f]{64})  (MyoTools-(?:Linux|Windows)\.zip)',line)
+              assert match and match.group(2) not in checks,'Bad checksum list'
+              checks[match.group(2)]=match.group(1)
+          assert set(checks)=={'MyoTools-Linux.zip','MyoTools-Windows.zip'}
+          for system in ('Linux','Windows'):
+              archive=folder/f'MyoTools-{system}.zip'
+              assert hashlib.sha256(archive.read_bytes()).hexdigest()==checks[archive.name]
+              prefix=f'MyoTools-{system}/'
+              with zipfile.ZipFile(archive) as z:
+                  assert z.testzip() is None
+                  infos=z.infolist()
+                  assert len(infos)<=300
+                  assert sum(x.file_size for x in infos)<=250*1024*1024
+                  names=set()
+                  for item in infos:
+                      assert not item.is_dir() and item.filename.startswith(prefix)
+                      suffix=item.filename[len(prefix):]
+                      path=PurePosixPath(suffix)
+                      assert suffix and not path.is_absolute() and '..' not in path.parts and '\\' not in suffix
+                      assert suffix not in names
+                      names.add(suffix)
+                      mode=item.external_attr>>16
+                      assert item.create_system!=3 or stat.S_IFMT(mode) in (0,stat.S_IFREG)
+                  manifest=json.loads(z.read(prefix+'DISTRIBUTION.json'))
+                  assert manifest['schema_version']==1
+                  assert manifest['suite_version']=='0.4.1'
+                  assert manifest['platform']==system.lower()
+                  assert manifest['update_channel']=='main'
+                  assert manifest['update_repository']=='BenLair/MyoTools'
+                  assert manifest['update_branch']=='main'
+                  assert names==set(manifest['sha256'])|{'DISTRIBUTION.json'}
+                  policy=z.read(prefix+'Hub/update_policy.py')
+                  assert b'MyoTools_Dev' not in policy and b'ALLOWED_CHANNELS = ("main",)' in policy
+                  for path,digest in manifest['sha256'].items():
+                      data=z.read(prefix+path)
+                      assert hashlib.sha256(data).hexdigest()==digest
+                  z.extractall(folder)
+              print('Verified public distribution',system,manifest['suite_version'])
+          PY
+      - name: Commit extracted distributions without altering source ZIPs
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          find Downloads/MyoTools-Linux Downloads/MyoTools-Windows -type f -name '*.sh' -exec chmod +x {} +
+          git add Downloads/MyoTools-Linux Downloads/MyoTools-Windows
+          if ! git diff --cached --quiet; then
+            git commit -m 'Expand verified v0.4.1 stable distribution folders'
+            git push origin HEAD:main
+          fi
