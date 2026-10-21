@@ -59,7 +59,7 @@ jobs:
                       assert item.create_system!=3 or stat.S_IFMT(mode) in (0,stat.S_IFREG)
                   manifest=json.loads(z.read(prefix+'DISTRIBUTION.json'))
                   assert manifest['schema_version']==1
-                  assert re.fullmatch(r'[0-9]+\\.[0-9]+\\.[0-9]+',manifest['suite_version'])
+                  assert re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+',manifest['suite_version'])
                   if verified_version is None:
                       verified_version=manifest['suite_version']
                   assert manifest['suite_version']==verified_version
