@@ -37,6 +37,7 @@ jobs:
               assert match and match.group(2) not in checks,'Bad checksum list'
               checks[match.group(2)]=match.group(1)
           assert set(checks)=={'MyoTools-Linux.zip','MyoTools-Windows.zip'}
+          verified_version=None
           for system in ('Linux','Windows'):
               archive=folder/f'MyoTools-{system}.zip'
               assert hashlib.sha256(archive.read_bytes()).hexdigest()==checks[archive.name]
@@ -58,7 +59,10 @@ jobs:
                       assert item.create_system!=3 or stat.S_IFMT(mode) in (0,stat.S_IFREG)
                   manifest=json.loads(z.read(prefix+'DISTRIBUTION.json'))
                   assert manifest['schema_version']==1
-                  assert manifest['suite_version']=='0.4.1'
+                  assert re.fullmatch(r'[0-9]+\\.[0-9]+\\.[0-9]+',manifest['suite_version'])
+                  if verified_version is None:
+                      verified_version=manifest['suite_version']
+                  assert manifest['suite_version']==verified_version
                   assert manifest['platform']==system.lower()
                   assert manifest['update_channel']=='main'
                   assert manifest['update_repository']=='BenLair/MyoTools'
@@ -79,6 +83,7 @@ jobs:
           find Downloads/MyoTools-Linux Downloads/MyoTools-Windows -type f -name '*.sh' -exec chmod +x {} +
           git add Downloads/MyoTools-Linux Downloads/MyoTools-Windows
           if ! git diff --cached --quiet; then
-            git commit -m 'Expand verified v0.4.1 stable distribution folders'
+            VERSION="$(python -c 'import json; print(json.load(open("Downloads/MyoTools-Linux/DISTRIBUTION.json"))["suite_version"])')"
+            git commit -m "Expand verified v${VERSION} stable distribution folders"
             git push origin HEAD:main
           fi
