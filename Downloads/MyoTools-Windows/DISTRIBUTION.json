@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "suite_version": "0.4.1",
+  "suite_version": "0.4.2",
   "update_channel": "main",
   "update_repository": "BenLair/MyoTools",
   "update_branch": "main",
@@ -30,13 +30,13 @@
   ],
   "sha256": {
     "Hub/app_registry.py": "92ef1d7dbd87528c3ab5d890f16e9e7e20c0fb31baa90179aa1f185d33872b22",
-    "Hub/apps.json": "35bf9072fce376163dec99af49cc0861c512011736e63855a421373f9b6f41c1",
+    "Hub/apps.json": "57298cbe85ec6be6c3129ce3e16a452ebad7b41162e5c5b8be22def1eae4d203",
     "Hub/assets/microscopy-sprite.webp": "fd66333d6570614756c2ab5e8a4f6b3f34f751e233fd0cf3fbaa2e1687c00a15",
     "Hub/assets/myotools-icon.ico": "ca04d9c5d94390c4c7c07d4a26529260dc2baac26ab99cbaf1dd373f659fe3e0",
     "Hub/check_myotools_env.py": "e53d4c64d53f3ed0f5bf67dd4c134972a2ec043283fc0a379e4ea1f4b2cc5d04",
     "Hub/installation.py": "95d8149987539c7b75d268f04810238f2c081cfe2071621498bfcd35277a5458",
-    "Hub/launcher.py": "f85d274f9fb6d67b547a4fcb04cb483651bdd498c583e5312c53285c8dcb8389",
-    "Hub/model_manager.py": "85ebffad533505afa479366f7a792c135bc96b12e020dc1abda6cba612d9fe91",
+    "Hub/launcher.py": "6b41cc151d984843d087a69d5a0aef0564940c3e67bb0547154bfdef9ee142b9",
+    "Hub/model_manager.py": "e6721cd088c6ca2b614ce54451b7bf123818c37f3857022d9c5c4be9add766a3",
     "Hub/platforms/windows/bootstrap_miniforge.ps1": "1cbcc5886cd4d66a57cec823497154f8c541dde49e5b0830db2a45d8f32d4ffb",
     "Hub/platforms/windows/create_shortcut.ps1": "3c9828bddc5125e5bc826af1276251d31172388634437b4e3c614be3d8efefff",
     "Hub/platforms/windows/environments/myofuse.yml": "4bed9d31186fbb32ce3f69162726526d94fc940bc1063edc8576570f2b201720",
@@ -67,7 +67,7 @@
     "MyoSeg/MyoSeg_v1.1.1.ipynb": "94be30a3e938181c10361dc8ac1556bf11abbcf0df7bcf3caad09d293359316c",
     "MyoSurface/MyoSurface_How_to_Use.md": "3558c889c3a138a15bfb989dc7c1693503f199683760f1255bbe92d4c2620ce8",
     "MyoSurface/MyoSurface_v1.0.0.ipynb": "9ef6c8a3a58accac0c56025cd57012f43389cb59f9219a2cf679058186daa49b",
-    "README.md": "8ae2dbbcfa644c96a6aaa24ed3d1ae3bdb62befdcb79b53ca83e156c01295130",
+    "README.md": "1d8f6da9c788594b1dc697cbfdf5635eb7bbd443edf28da65a18b345280ba5ed",
     "UNINSTALL.bat": "a36bca9d59a25f172d0d2967371d9920a2257c725b366fb58b9c5af4da44fea3"
   }
 }

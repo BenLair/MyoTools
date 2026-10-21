@@ -27,25 +27,25 @@ MODEL_DIR = ROOT / "Hub" / "runtime" / "models"
 # A replaced release asset cannot silently change the model used for analysis.
 MODELS = {
     "myoseg": {
-        "name": "MyoSeg · fluorescence", "asset": "MyoSeg", "tag": "MyoSeg",
+        "name": "MyoSeg · fluorescence", "asset": "MyoSeg", "tag": "MyoSeg-v1.0.0", "version": "1.0.0",
         "size": 26561372,
         "sha256": "8ef4c909ef0d3b3573e88a632526daa036d9b1a297193a53fc00ee69e1067df6",
         "applications": "MyoSeg (fluorescence)",
     },
     "myoseg_he": {
-        "name": "MyoSeg · H&E", "asset": "MyoSeg_HE", "tag": "MyoSeg_HE",
+        "name": "MyoSeg · H&E", "asset": "MyoSeg_HE", "tag": "MyoSeg_HE-v1.0.0", "version": "1.0.0",
         "size": 26559787,
         "sha256": "9488606007e52f804e1aaa9731b229a54d2ac2285d18a4f29379824053728151",
         "applications": "MyoSeg (H&E RGB)",
     },
     "myoclass": {
-        "name": "MyoClass · marqueurs", "asset": "MyoClass", "tag": "MyoClass",
+        "name": "MyoClass · marqueurs", "asset": "MyoClass", "tag": "MyoClass-v1.0.0", "version": "1.0.0",
         "size": 26559879,
         "sha256": "cda4a76563fb87a33ec641b7b7fad936877c942188456a68723521db8b7a4924",
         "applications": "MyoClass (mode Automatic)",
     },
     "myonuclei": {
-        "name": "MyoNuclei · noyaux", "asset": "MyoNuclei", "tag": "MyoNuclei",
+        "name": "MyoNuclei · noyaux", "asset": "MyoNuclei", "tag": "MyoNuclei-v1.0.0", "version": "1.0.0",
         "size": 26556687,
         "sha256": "4166d70eaccdf50321aad93dfc4cda1791708aa9c702075d08de240e698890c1",
         "applications": "MyoFuse (segmentation des noyaux)",
@@ -88,11 +88,11 @@ def catalog() -> list[dict]:
     items = []
     for key, info in MODELS.items():
         items.append({"id": key, "name": info["name"], "applications": info["applications"],
-                      "size": info["size"], "path": str(path_for(key)),
+                      "size": info["size"], "version": info["version"], "tag": info["tag"], "path": str(path_for(key)),
                       "release": f"https://github.com/{update_policy.MODEL_REPOSITORY}/releases/tag/{info['tag']}",
                       "installed": valid_model(key)})
     items.append({"id": "svetlana", "name": "Svetlana · classification", "applications": "MyoFuse (classification)",
-                  "size": 286804, "path": str(SVETLANA_TARGET),
+                  "size": 286804, "version": None, "tag": None, "path": str(SVETLANA_TARGET),
                   "release": "https://github.com/BenLair/MyoFuse", "installed": valid_svetlana()})
     return items
 

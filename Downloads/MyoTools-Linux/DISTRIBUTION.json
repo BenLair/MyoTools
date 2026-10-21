@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "suite_version": "0.4.1",
+  "suite_version": "0.4.2",
   "update_channel": "main",
   "update_repository": "BenLair/MyoTools",
   "update_branch": "main",
@@ -30,13 +30,13 @@
   ],
   "sha256": {
     "Hub/app_registry.py": "92ef1d7dbd87528c3ab5d890f16e9e7e20c0fb31baa90179aa1f185d33872b22",
-    "Hub/apps.json": "66936bac53f0120efeb6399960bb4f4f0a1eadab675ce2359e856e84329dd3c5",
+    "Hub/apps.json": "274d1c68fd02ba6b2def4ca8a8e14d53965c4ab69ad04afe3c55fd8dab1981d1",
     "Hub/assets/microscopy-sprite.webp": "fd66333d6570614756c2ab5e8a4f6b3f34f751e233fd0cf3fbaa2e1687c00a15",
     "Hub/assets/myotools-icon.svg": "9c851095f55d804153704e59f8a64e69bcc53c4759aaaf17267f8aa17b1872dd",
     "Hub/check_myotools_env.py": "e53d4c64d53f3ed0f5bf67dd4c134972a2ec043283fc0a379e4ea1f4b2cc5d04",
     "Hub/installation.py": "95d8149987539c7b75d268f04810238f2c081cfe2071621498bfcd35277a5458",
-    "Hub/launcher.py": "f85d274f9fb6d67b547a4fcb04cb483651bdd498c583e5312c53285c8dcb8389",
-    "Hub/model_manager.py": "85ebffad533505afa479366f7a792c135bc96b12e020dc1abda6cba612d9fe91",
+    "Hub/launcher.py": "6b41cc151d984843d087a69d5a0aef0564940c3e67bb0547154bfdef9ee142b9",
+    "Hub/model_manager.py": "e6721cd088c6ca2b614ce54451b7bf123818c37f3857022d9c5c4be9add766a3",
     "Hub/platforms/linux/environments/myofuse.yml": "d136d7028971ec3c5b0b2ff50c98e41653d07788d202b32188682f90ad11d481",
     "Hub/platforms/linux/environments/myotools.yml": "ad2ab0ae789e0d2890a11e2b12efa345c4a7cd3be08e9912288ed9bc4afc0c6a",
     "Hub/platforms/linux/install.sh": "7b9a940de9c56581e8965a136e713f1bc46cf861868c7e54a4c7e564b65d2ae6",
@@ -64,7 +64,7 @@
     "MyoSeg/MyoSeg_v1.1.1.ipynb": "94be30a3e938181c10361dc8ac1556bf11abbcf0df7bcf3caad09d293359316c",
     "MyoSurface/MyoSurface_How_to_Use.md": "3558c889c3a138a15bfb989dc7c1693503f199683760f1255bbe92d4c2620ce8",
     "MyoSurface/MyoSurface_v1.0.0.ipynb": "9ef6c8a3a58accac0c56025cd57012f43389cb59f9219a2cf679058186daa49b",
-    "README.md": "44b903bf19a2f6a836064e4f6963beb441eab215428be68a157d75d5c0b30122",
+    "README.md": "88f7e9b181f988f5097a3891ca3e78e946cee638a5a4d3275287d848bf5424f8",
     "UNINSTALL.sh": "6113d5b4337ea9628417ff02b94f1048edd5deb428742765f24c6c310bfb7a31"
   }
 }

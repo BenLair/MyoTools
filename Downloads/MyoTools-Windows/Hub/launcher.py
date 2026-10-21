@@ -370,6 +370,7 @@ async function refresh(){
  for(const item of items){
   const card=document.createElement('section');card.className='model';
   const title=document.createElement('h2');title.textContent=item.name;card.append(title);
+  if(item.version){const v=document.createElement('p');v.className='feedback';v.textContent='Model version: v'+item.version;card.append(v);}
   const use=document.createElement('p');use.textContent=item.applications;card.append(use);
   const location=document.createElement('p');const code=document.createElement('code');
   code.textContent=item.path;location.append('Path: ',code);card.append(location);
