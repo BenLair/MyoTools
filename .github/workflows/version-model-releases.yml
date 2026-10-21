@@ -1,0 +1,56 @@
+name: Version pretrained model releases
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/version-model-releases.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: version-model-releases
+  cancel-in-progress: false
+
+jobs:
+  version-weights:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify exact legacy weights and create immutable model version tags
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tempdir="$(mktemp -d)"
+          trap 'rm -rf "$tempdir"' EXIT
+
+          while IFS='|' read -r legacy versioned expected_sha expected_size; do
+            echo "Verifying $legacy before publishing $versioned"
+            mkdir -p "$tempdir/$versioned/old" "$tempdir/$versioned/check"
+            gh release download "$legacy" --repo "$GH_REPO" --pattern "$legacy" --dir "$tempdir/$versioned/old"
+            file="$tempdir/$versioned/old/$legacy"
+            test -f "$file"
+            actual_size="$(stat -c '%s' "$file")"
+            test "$actual_size" = "$expected_size"
+            actual_sha="$(sha256sum "$file" | cut -d ' ' -f 1)"
+            test "$actual_sha" = "$expected_sha"
+
+            if gh release view "$versioned" --repo "$GH_REPO" >/dev/null 2>&1; then
+              echo "Versioned release already exists: verifying, never overwriting"
+              gh release download "$versioned" --repo "$GH_REPO" --pattern "$legacy" --dir "$tempdir/$versioned/check"
+              test "$(sha256sum "$tempdir/$versioned/check/$legacy" | cut -d ' ' -f 1)" = "$expected_sha"
+            else
+              gh release create "$versioned" "$file" --repo "$GH_REPO" --target main --title "$legacy · v1.0.0" \
+                --notes "First versioned release of the validated $legacy pretrained model. Identical weights to the legacy $legacy release; SHA-256: $expected_sha. This tag and model asset are immutable; new weights require a new version tag."
+            fi
+            echo "Verified $legacy release v1.0.0: $actual_sha"
+          done <<'MODEL_MANIFEST'
+MyoSeg|MyoSeg-v1.0.0|8ef4c909ef0d3b3573e88a632526daa036d9b1a297193a53fc00ee69e1067df6|26561372
+MyoSeg_HE|MyoSeg_HE-v1.0.0|9488606007e52f804e1aaa9731b229a54d2ac2285d18a4f29379824053728151|26559787
+MyoClass|MyoClass-v1.0.0|cda4a76563fb87a33ec641b7b7fad936877c942188456a68723521db8b7a4924|26559879
+MyoNuclei|MyoNuclei-v1.0.0|4166d70eaccdf50321aad93dfc4cda1791708aa9c702075d08de240e698890c1|26556687
+MODEL_MANIFEST
