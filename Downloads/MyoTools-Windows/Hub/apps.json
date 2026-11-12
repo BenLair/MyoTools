@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "suite_version": "0.4.2",
+  "suite_version": "0.4.3",
   "update_channel": "main",
   "update_repository": "BenLair/MyoTools",
   "update_branch": "main",
@@ -22,7 +22,7 @@
       "environment": "myotools",
       "directory": "MyoClass",
       "pattern": "MyoClass*_v*.ipynb",
-      "release_version": "1.0.1"
+      "release_version": "1.0.2"
     },
     {
       "id": "myofuse",

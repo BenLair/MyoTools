@@ -1,4 +1,4 @@
-# MyoClass: How to Use (v1.0.1, Cellpose 3)
+# MyoClass: How to Use (v1.0.2, Cellpose 3)
 
 MyoClass assigns **independent binary fluorescence marker calls** to pre-segmented muscle fibers. It can segment marker-positive regions using Cellpose 3, collect manual classifications in Napari, infer one complementary negative category, and export fiber counts, CSA, minimum Feret diameter, and combinations of markers.
 
@@ -8,7 +8,7 @@ MyoClass assigns **independent binary fluorescence marker calls** to pre-segment
 
 ```bash
 conda activate myotools
-voila MyoClass/MyoClass_v1.0.1.ipynb
+voila MyoClass/MyoClass_v1.0.2.ipynb
 ```
 
 Run from the **MyoTools repository root**. Voilà provides the browser interface; **Napari opens separately on the computer running Voilà**.
@@ -173,7 +173,7 @@ Both `Exports/automatic/` and `Exports/reviewed/` contain `segmentation_results_
 
 The Excel workbook includes detailed fiber rows, `Summary_all`, per-marker `Summary_chN`, CSA/Feret count and percentage distributions for all fibers and each marker, `Combinations`, `Marker_names` (including mode/origin), `Export_issues`, and `Parameters`. The detailed table includes individual 0/1 marker calls, combinations, inclusion status, and classification source.
 
-To resume work, set **Output / existing project folder** to the original `MyoClass_results/` and click **Load existing project**. Saved image/mask/model paths and marker settings are restored where those paths still exist. Then use **Refresh review status**, **Open Napari review**, or **Export fiber measurements** as appropriate. Keep the `Log/` and `Review/` folders if you move or archive a project.
+To resume work, select the original or copied `MyoClass_results/` folder in **Output / existing project folder** and click **Load existing project**. Saved marker settings are restored; the selected new image/mask/model locations take precedence over their old paths. Then use **Refresh review status**, **Open Napari review**, or **Export fiber measurements** as appropriate. Copy the complete results folder when moving or archiving a project; see the relocation instructions below.
 
 ## 9. Troubleshooting
 
@@ -188,3 +188,17 @@ To resume work, set **Output / existing project folder** to the original `MyoCla
 | Reviewed export produces no workbook | Confirm that at least one valid image is marked **Reviewed**; inspect review status and `Export_issues` for skips. |
 | An inferred call seems wrong | Inspect all source-marker calls: the inferred marker is `1` only when **every other enabled source marker is `0`**. |
 
+
+
+## Move a project to another computer (MyoClass 1.0.2)
+
+1. Save and close Napari and MyoClass on the original computer.
+2. Copy the complete `MyoClass_results` folder, including `Log`, `Reference_masks`, `Prepared_channels`, `Signal_masks`, `Automatic`, `Review`, and any backups. Keep their internal names and folder structure.
+3. On the other computer, select the copied folder in **Output / existing project folder**. If the original images, reference masks or model moved too, select their new locations. Preserve the image/mask subfolder structure relative to the selected roots; files are matched by their saved relative paths, not by an approximate filename search.
+4. Click **Load existing project**, then open **Napari review**. Saved draft calls, reviewed status and image identities are retained. Loading does not run Cellpose or overwrite any mapping workbook.
+
+Original images, original masks and the Cellpose model are not needed just to review prepared images or export existing results. To rerun automatic classification, select their valid new locations and click **Load existing project** again. Changing an analysis parameter or file content can invalidate cached stages; genuinely stale reviews stay stale. **Reset selected review** remains an explicit, separate action.
+
+Newly recorded file signatures use SHA-256 content fingerprints, so moving/copying unchanged files or changing their timestamps does not invalidate the classification. Loading a project creates a new `review_session.json` with the current paths. Before updating project metadata, MyoClass retains the previous manifest in `Log/Backups/project_before_relocation_*.json`.
+
+Projects created in 1.0.1 did not record image-content hashes. Their first migration checks the saved file sizes and available original copies, verifies the automatic mapping hash, preserves existing review signatures and records migration warnings. When original copies are unavailable, this cannot retrospectively prove that a same-size image copy is unchanged; check the copied inputs before rerunning classification. Future loads use the newly recorded content hashes. Missing or changed cached files are reported and their review workbooks are retained.

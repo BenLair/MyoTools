@@ -1,0 +1,30 @@
+name: MyoClass project portability
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/MyoClass/**'
+      - 'MyoClass/**'
+      - '.github/workflows/myoclass-portability.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portability:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install scientific and notebook test dependencies
+        run: python -m pip install numpy pandas tifffile scipy scikit-image pillow openpyxl ipywidgets ipyfilechooser nbformat
+      - name: Validate relocation, review preservation and cache invalidation
+        run: python -m unittest discover -s MyoClass/tests -v
