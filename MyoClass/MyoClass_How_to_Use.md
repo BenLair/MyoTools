@@ -1,4 +1,4 @@
-# MyoClass: How to Use (v1.0.2, Cellpose 3)
+# MyoClass: How to Use (v1.0.3, Cellpose 3)
 
 MyoClass assigns **independent binary fluorescence marker calls** to pre-segmented muscle fibers. It can segment marker-positive regions using Cellpose 3, collect manual classifications in Napari, infer one complementary negative category, and export fiber counts, CSA, minimum Feret diameter, and combinations of markers.
 
@@ -8,7 +8,7 @@ MyoClass assigns **independent binary fluorescence marker calls** to pre-segment
 
 ```bash
 conda activate myotools
-voila MyoClass/MyoClass_v1.0.2.ipynb
+voila MyoClass/MyoClass_v1.0.3.ipynb
 ```
 
 Run from the **MyoTools repository root**. Voilà provides the browser interface; **Napari opens separately on the computer running Voilà**.
@@ -202,3 +202,7 @@ Original images, original masks and the Cellpose model are not needed just to re
 Newly recorded file signatures use SHA-256 content fingerprints, so moving/copying unchanged files or changing their timestamps does not invalidate the classification. Loading a project creates a new `review_session.json` with the current paths. Before updating project metadata, MyoClass retains the previous manifest in `Log/Backups/project_before_relocation_*.json`.
 
 Projects created in 1.0.1 did not record image-content hashes. Their first migration checks the saved file sizes and available original copies, verifies the automatic mapping hash, preserves existing review signatures and records migration warnings. When original copies are unavailable, this cannot retrospectively prove that a same-size image copy is unchanged; check the copied inputs before rerunning classification. Future loads use the newly recorded content hashes. Missing or changed cached files are reported and their review workbooks are retained.
+
+### Loading progress in 1.0.3
+
+The load button immediately displays its status and progress beside the selected project folder. File checks run in the background, keeping the interface responsive. Large projects can take several minutes to read. Each unchanged file is hashed once per load and the same validation results are reused for the review session and image list. A new load always checks content again. Errors appear beside the load button. Existing automatic and reviewed mapping workbooks are not rewritten.

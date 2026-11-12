@@ -2,7 +2,7 @@
 
 **MyoTools** is a suite of four complementary applications for quantitative skeletal muscle imaging. It provides interactive workflows for muscle-fiber segmentation, fiber typing, myonuclear fusion, and myotube surface measurement.
 
-The current stable suite is **v0.4.3**. Pretrained model weights are distributed separately through [GitHub Releases](https://github.com/BenLair/MyoTools/releases); application packages are distributed only through the `Downloads/` folder of this repository.
+The current stable suite is **v0.4.4**. Pretrained model weights are distributed separately through [GitHub Releases](https://github.com/BenLair/MyoTools/releases); application packages are distributed only through the `Downloads/` folder of this repository.
 
 ## Download and install
 

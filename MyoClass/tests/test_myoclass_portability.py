@@ -3,6 +3,9 @@
 Run: python -m unittest discover -s MyoClass/tests -v
 Requires the normal MyoClass scientific Python dependencies, but no GPU/Cellpose.
 """
+import asyncio
+import threading
+from unittest.mock import patch
 import contextlib
 import io
 import json
@@ -16,9 +19,9 @@ import numpy as np
 import tifffile as tiff
 
 ROOT = Path(__file__).resolve().parents[2]
-NOTEBOOK = next(ROOT.glob('Downloads/MyoTools-Linux/MyoClass/MyoClass_v1.0.2.ipynb'), None)
+NOTEBOOK = next(ROOT.glob('Downloads/MyoTools-Linux/MyoClass/MyoClass_v1.0.3.ipynb'), None)
 if NOTEBOOK is None:
-    NOTEBOOK = ROOT / 'MyoClass/MyoClass_v1.0.2.ipynb'
+    NOTEBOOK = ROOT / 'MyoClass/MyoClass_v1.0.3.ipynb'
 
 
 def load_core(path):
@@ -279,6 +282,112 @@ class ProjectPortabilityTests(unittest.TestCase):
     def test_relocation_rejects_parent_traversal(self):
         with self.assertRaises(ValueError):
             CORE['relocated_path']('/old/results/Review/../../other.xlsx', '/old/results', self.base)
+
+    def make_app(self):
+        namespace = dict(CORE)
+        notebook = json.loads(NOTEBOOK.read_text())
+        with contextlib.redirect_stdout(io.StringIO()):
+            exec(''.join(notebook['cells'][3]['source']), namespace)
+            source = ''.join(notebook['cells'][4]['source']).split('myoclass_app=MyoClassApp()')[0]
+            exec(source, namespace)
+            app = namespace['MyoClassApp']()
+        app.output_path.value = str(self.root)
+        return app, namespace
+
+    def test_loading_hashes_large_artifacts_once_and_not_again_for_the_ui(self):
+        self.make_project()
+        app, namespace = self.make_app()
+        original_stamp = CORE['file_stamp']
+        checked = {}
+        def count_stamp(path):
+            key = str(Path(path).resolve())
+            checked[key] = checked.get(key, 0) + 1
+            return original_stamp(path)
+        with patch.dict(CORE, {'file_stamp': count_stamp}):
+            app.load_existing(self.settings)
+        self.assertTrue(checked)
+        self.assertTrue(all(count == 1 for count in checked.values()), checked)
+        self.assertIn('Project loaded: 1', app.project_status.value)
+        self.assertEqual(self.calls, 0)
+
+    def test_legacy_migration_reuses_file_hashes_only_within_one_load(self):
+        self.make_project(legacy=True)
+        original_stamp = CORE['file_stamp']
+        checked = {}
+        def count_stamp(path):
+            key = str(Path(path).resolve())
+            checked[key] = checked.get(key, 0) + 1
+            return original_stamp(path)
+        with patch.dict(CORE, {'file_stamp': count_stamp}):
+            CORE['load_portable_project'](self.root, self.settings)
+        self.assertTrue(checked)
+        self.assertTrue(all(count == 1 for count in checked.values()), checked)
+        self.assert_review_unchanged('Draft')
+
+    def test_a_new_load_rechecks_content_and_rejects_a_changed_artifact(self):
+        self.make_project()
+        entries = []
+        CORE['load_portable_project'](self.root, self.settings, validated_entries=entries)
+        self.assertEqual(len(entries), 1)
+        path = Path(entries[0]['prepared_paths']['ch0'])
+        info = path.stat()
+        data = bytearray(path.read_bytes())
+        data[-1] ^= 1
+        path.write_bytes(data)
+        os.utime(path, ns=(info.st_atime_ns, info.st_mtime_ns))
+        entries = []
+        _, warnings = CORE['load_portable_project'](self.root, self.settings, validated_entries=entries)
+        self.assertEqual(entries, [])
+        self.assertTrue(any('incomplete or changed' in warning for warning in warnings))
+        self.assertEqual(Path(self.original_entry['review_path']).read_bytes(), self.review_bytes)
+
+    def test_actual_load_button_is_responsive_and_shows_progress(self):
+        self.make_project()
+        app, namespace = self.make_app()
+        entered, release = threading.Event(), threading.Event()
+        original_loader = CORE['load_portable_project']
+        def slow_loader(*args, **kwargs):
+            entered.set()
+            if not release.wait(5):
+                raise RuntimeError('Test did not release the file-check worker')
+            return original_loader(*args, **kwargs)
+        async def exercise():
+            with patch.dict(namespace, {'load_portable_project': slow_loader}):
+                app.load_button.click()
+                self.assertIn('Loading project', app.project_status.value)
+                self.assertTrue(app.load_button.disabled)
+                try:
+                    for _ in range(100):
+                        if entered.is_set(): break
+                        await asyncio.sleep(0.01)
+                    self.assertTrue(entered.is_set())
+                    self.assertFalse(app.task.done())
+                    # The same loop can handle UI events while file checks wait.
+                    await asyncio.sleep(0.01)
+                finally:
+                    release.set()
+                await app.task
+            self.assertFalse(app.busy)
+            self.assertFalse(app.load_button.disabled)
+            self.assertIn('Project loaded: 1', app.project_status.value)
+            self.assertEqual(len(app.marker_rows), 3)
+            self.assertEqual(len(app.review_image.options), 1)
+            self.assertIn('Draft', app.review_image.options[0][0])
+        asyncio.run(exercise())
+        self.assert_review_unchanged('Draft')
+
+    def test_actual_load_button_displays_errors_beside_the_button(self):
+        self.make_project()
+        app, _ = self.make_app()
+        app.output_path.value = str(self.base / 'no-project-here')
+        async def exercise():
+            app.load_button.click()
+            await app.task
+        asyncio.run(exercise())
+        self.assertIn('Could not load project', app.project_status.value)
+        self.assertIn('No existing MyoClass project', app.project_status.value)
+        self.assertFalse(app.load_button.disabled)
+        self.assertEqual(self.calls, 0)
 
 
 if __name__ == '__main__':
