@@ -3,7 +3,7 @@
 This file uses Python standard library only.
 """
 from __future__ import annotations
-import atexit, html, json, os, secrets, shutil, socket, subprocess, sys, threading, time, webbrowser
+import atexit, codecs, html, json, os, secrets, shutil, socket, subprocess, sys, threading, time, webbrowser
 from urllib.request import urlopen
 from urllib.error import URLError
 from pathlib import Path
@@ -111,6 +111,32 @@ def status(item):
     note = " · Svetlana model not installed (select or install it in MyoFuse)" if item.id == "myofuse" and not (ROOT / "MyoFuse/Models/Svetlana/MyoFuse.pth").is_file() else ""
     return {"state":"available","message":"v"+str(item.version)+" · Launch in "+item.environment+note, "version":item.version}
 
+def relay_log(item, process, path):
+    """Copy the app log to the launch terminal without blocking the child process."""
+    decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+    pending = ""
+    try:
+        with path.open("rb") as stream:
+            while True:
+                data = stream.read(65536)
+                if data:
+                    pending += decoder.decode(data)
+                    lines = pending.split("\n")
+                    pending = lines.pop()
+                    for line in lines:
+                        print("[%s] %s" % (item.name, line.rstrip("\r")), flush=True)
+                    continue
+                if process.poll() is not None:
+                    pending += decoder.decode(b"", final=True)
+                    if pending:
+                        print("[%s] %s" % (item.name, pending), flush=True)
+                    print("[%s] Server stopped (exit code %s)." % (item.name, process.returncode), flush=True)
+                    break
+                time.sleep(0.15)
+    except (OSError, ValueError) as exc:
+        try: print("[%s] Could not display the app log: %s" % (item.name, exc), flush=True)
+        except (OSError, ValueError): pass
+
 def start(item):
     with LOCK:
         if UNINSTALLING or UPDATE_SHUTDOWN:
@@ -132,11 +158,18 @@ def start(item):
                "--no-browser", "--port=%d" % port,"--Voila.ip=127.0.0.1"]
         # The notebooks live under ROOT, and Voila serves only the files in this folder.
         flags = subprocess.CREATE_NEW_PROCESS_GROUP if ON_WINDOWS else 0
-        env = {**os.environ, "MYOTOOLS_MODEL_DIR": str(model_manager.MODEL_DIR)}
-        with log.open("w",encoding="utf-8") as f:
+        env = {**os.environ, "MYOTOOLS_MODEL_DIR": str(model_manager.MODEL_DIR),
+               "MYOTOOLS_DIAGNOSTIC_LOG": str(log), "PYTHONUNBUFFERED": "1"}
+        # Start a fresh log for each application launch; notebook diagnostics append to it.
+        log.write_text("", encoding="utf-8")
+        print("[%s] Starting v%s in Conda environment %s; log: %s" %
+              (item.name, item.version, group, log), flush=True)
+        print("[%s] Notebook: %s; local port: %d" % (item.name, item.notebook, port), flush=True)
+        with log.open("a",encoding="utf-8") as f:
             proc = subprocess.Popen(cmd,cwd=ROOT,stdin=subprocess.DEVNULL,stdout=f,stderr=subprocess.STDOUT,
                                     creationflags=flags,start_new_session=not ON_WINDOWS,env=env)
         RUNNING[item.id]={"process":proc,"port":port,"log":log}
+        threading.Thread(target=relay_log, args=(item, proc, log), daemon=True).start()
         return status(item)
 
 STYLE = """
