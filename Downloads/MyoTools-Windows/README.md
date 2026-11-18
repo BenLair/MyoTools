@@ -1,4 +1,4 @@
-# MyoTools v0.4.6 — Windows
+# MyoTools v0.4.7 — Windows
 
 Cette archive contient les quatre applications et tous les fichiers communs
 nécessaires à ce système. Vous n'avez besoin ni de l'autre archive ni du dépôt complet.
@@ -44,4 +44,4 @@ Conservez le dossier d'installation à son emplacement pendant son utilisation.
 | MyoSurface | 1.0.0 |
 
 During use, diagnostic messages appear in the launch terminal and in `Hub/runtime/<application>.log`. Each application log is replaced when the application is launched again. Logs can contain file names and paths; review them before sharing.
-Il s'agit de la distribution de MyoTools v0.4.6 ; voir `DISTRIBUTION.json` pour la référence source.
+Il s'agit de la distribution de MyoTools v0.4.7 ; voir `DISTRIBUTION.json` pour la référence source.

@@ -1,4 +1,4 @@
-# MyoFuse: How to Use (v1.1.1)
+# MyoFuse: How to Use (v1.1.2)
 
 MyoFuse measures the fusion index (FI) in two-channel fluorescence images of myotube cultures. It uses Cellpose to segment nuclei and the Svetlana classifier to identify nuclei inside myotubes. The Linux and Windows notebooks implement the same workflow; use the notebook supplied for your operating system. See the [MyoTools README](../README.md) for installation and the [MyoFuse project README](README.md) for the publication and citation.
 
@@ -7,10 +7,10 @@ MyoFuse measures the fusion index (FI) in two-channel fluorescence images of myo
 Download and extract the [complete ZIP for your operating system](../Downloads/README.md), run `INSTALL.bat` (Windows) or `bash INSTALL.sh` (Linux), and open the MyoTools desktop shortcut. Choose **MyoFuse** in the Hub. For manual startup, activate `myofuse_env`, start from the MyoTools root, and run the appropriate command:
 
 ```bash
-voila MyoFuse/Codes/linux/MyoFuse_linux_v1.1.1.ipynb
+voila MyoFuse/Codes/linux/MyoFuse_linux_v1.1.2.ipynb
 ```
 
-On Windows, use `voila MyoFuse/Codes/windows/MyoFuse_win_v1.1.1.ipynb` instead. Leave the Voilà terminal running during analysis.
+On Windows, use `voila MyoFuse/Codes/windows/MyoFuse_win_v1.1.2.ipynb` instead. Leave the Voilà terminal running during analysis.
 
 Before opening MyoFuse, select **Models** in the Hub and download **MyoNuclei**. The Hub verifies the release file's size and SHA-256 and saves it at `Hub/runtime/models/MyoNuclei`; the notebook then proposes this path. The installer fetches the separate **Svetlana** classifier at `MyoFuse/Models/Svetlana/MyoFuse.pth`. Its `Config.json` must stay in the same folder. Both file selectors let you choose another model if needed. If you download a model while the notebook is already open, reopen the application to see its new default path.
 
@@ -32,7 +32,7 @@ Check that prepared files correspond to the same images and geometry when skippi
 
 ## 3. Adjust parameters and preview a crop
 
-**Cellpose diameter** defaults to `24` pixels. **Cellpose batch size** defaults to `8` and controls how many image patches Cellpose processes at once. If segmentation runs out of GPU memory, try `4` or `1`; smaller batches may be slower and may not resolve every memory error. The setting applies to both preview and full analysis. Changing it does not invalidate completed segmentation checkpoints when resuming; incomplete images are processed with the selected value. Segmentation and classification devices each offer **GPU** and **CPU**; both default to GPU in the interface, so select CPU if the computer cannot use the requested GPU. The classification batch size is a separate setting. Classification also exposes **Upper percentile** (`99.7`), **Half patch size** (`100`) and **Batch size** (`512`). The patch size should match the classifier training setup. The **Outputs** section controls annotated prediction images, normalized images and preview downsampling.
+**Cellpose diameter** defaults to `24` pixels. **Cellpose batch size** defaults to `8` and controls how many image patches Cellpose processes at once. If segmentation runs out of GPU memory, try `4` or `1`; smaller batches may be slower and may not resolve every memory error. The setting applies to both preview and full analysis. Changing it does not invalidate completed segmentation checkpoints when resuming; incomplete images are processed with the selected value. Segmentation offers **GPU**, **CPU**, and **GPU + CPU (experimental)**. The latter runs network inference on a CUDA GPU and reconstructs and checks masks on the CPU; it may reduce GPU memory usage but requires system RAM and can be slower. It does not guarantee that every large image will fit. GPU remains the default. Classification offers GPU and CPU. Use CPU if a CUDA GPU is unavailable; GPU + CPU requires a working CUDA GPU. The choice applies to both preview and full analysis. Resume reuses masks already completed under any device mode and uses the selected mode only for images that need processing. Start a new analysis if you need to regenerate all masks with one mode. CPU and GPU mask reconstruction may differ numerically; inspect and compare results before scientific use. The classification batch size is a separate setting. Classification also exposes **Upper percentile** (`99.7`), **Half patch size** (`100`) and **Batch size** (`512`). The patch size should match the classifier training setup. The **Outputs** section controls annotated prediction images, normalized images and preview downsampling.
 
 Use **Show diameter guide** to inspect the diameter on a representative nuclear crop. **Test segmentation + classification on crop** previews the nuclear signal, Cellpose mask and classifier calls; its FI describes only that crop and **does not write batch outputs**. Confirm channel assignments, mask quality and inside/outside calls before analyzing the entire field. A preview cannot establish that all images in a batch are suitable.
 
