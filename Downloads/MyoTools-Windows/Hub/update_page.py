@@ -62,13 +62,15 @@ let waiting=false;
 let downloadAvailable=false;
 let installedUpdateAvailable=false;
 let rollbackAllowed=false;
+let installAllowed=true;
+let monitoring=false;
 const installButton=document.getElementById('install-update');
 const rollbackButton=document.getElementById('rollback-update');
 const confirmField=document.getElementById('confirm-update');
 const maintenanceStatus=document.getElementById('maintenance-status');
 function updateMaintenanceButtons(){
  const confirmed=confirmField.value==='UPDATE MYOTOOLS';
- installButton.disabled=waiting||!confirmed||!installedUpdateAvailable;
+ installButton.disabled=waiting||!confirmed||!installedUpdateAvailable||!installAllowed;
  rollbackButton.disabled=waiting||!confirmed||!rollbackAllowed;
 }
 confirmField.addEventListener('input',updateMaintenanceButtons);
@@ -82,8 +84,7 @@ function setBusy(value){
 function showResult(info){
  const state=String(info.status||'');
  if(state==='available'){
-  resultLine.textContent='Version '+info.latest+' is available on '+info.channel+
-   '. Ready to download and verify.';
+  resultLine.textContent=(info.latest===info.installed?'A maintenance correction for MyoTools '+info.latest:'Version '+info.latest)+' is available on '+info.channel+'. Ready to download and verify.';
   downloadAvailable=true;
   installedUpdateAvailable=false;
  }else if(state==='up-to-date'){
@@ -124,17 +125,50 @@ async function perform(action){
 checkButton.addEventListener('click',()=>perform('check'));
 downloadButton.addEventListener('click',()=>perform('download'));
 async function inspectLocal(){
- const response=await fetch('/api/updates/status',{cache:'no-store'});
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),4000);
+ let response;
+ try{response=await fetch('/api/updates/status',{cache:'no-store',signal:controller.signal});}
+ finally{clearTimeout(timeout);}
  if(!response.ok)throw Error('Cannot inspect this MyoTools installation');
  const info=await response.json();
  document.getElementById('installed').textContent=info.installed;
  document.getElementById('channel').textContent=info.channel;
  document.getElementById('platform').textContent=info.platform;
  rollbackAllowed=Boolean(info.rollback_enabled);
+ installAllowed=info.install_enabled!==false;
  if(info.operation){
   maintenanceStatus.textContent=(info.operation.status||'')+': '+(info.operation.details||'');
  }
  updateMaintenanceButtons();
+ return info;
+}
+function monitorMaintenance(){
+ if(monitoring)return;
+ monitoring=true;
+ let attempts=0;
+ async function poll(){
+  attempts++;
+  try{
+   const info=await inspectLocal();
+   if(info.operation && ["complete","error"].includes(info.operation.status)){
+    if(info.operation.status==="error"){
+     installedUpdateAvailable=false;
+     maintenanceStatus.textContent+=" Reopen the Hub before retrying; inspect the operation log if recovery is required.";
+    }
+    monitoring=false;setBusy(false);return;
+   }
+  }catch(error){
+   maintenanceStatus.textContent="The Hub connection closed during maintenance. Wait for the new Hub window. If it does not open, reopen MyoTools and inspect Hub/runtime/updates/operation.json and the worker/restart logs. Installation is not yet confirmed.";
+  }
+  if(attempts>=45){
+   monitoring=false;
+   maintenanceStatus.textContent+=" Status monitoring ended. Reopen the Hub to see the final operation result; do not assume installation succeeded.";
+   return;
+  }
+  setTimeout(poll,1000);
+ }
+ setTimeout(poll,1000);
 }
 async function maintenance(action){
  if(waiting||confirmField.value!=='UPDATE MYOTOOLS')return;
@@ -155,6 +189,7 @@ async function maintenance(action){
   rollbackButton.disabled=true;
   checkButton.disabled=true;
   downloadButton.disabled=true;
+  monitorMaintenance();
  }catch(error){
   maintenanceStatus.textContent='Maintenance error: '+String(error);
   setBusy(false);
@@ -163,5 +198,7 @@ async function maintenance(action){
 }
 installButton.addEventListener('click',()=>maintenance('install'));
 rollbackButton.addEventListener('click',()=>maintenance('rollback'));
-inspectLocal().catch(error=>{resultLine.textContent='Installation details unavailable: '+String(error);});
+inspectLocal().then(info=>{
+ if(info.operation && ['queued','waiting','applying','recovering','restarting'].includes(info.operation.status)){setBusy(true);monitorMaintenance();}
+}).catch(error=>{resultLine.textContent='Installation details unavailable: '+String(error);});
 </script></body></html>"""

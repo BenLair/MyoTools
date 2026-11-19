@@ -42,5 +42,6 @@
       "pattern": "MyoSurface_v*.ipynb",
       "release_version": "1.0.0"
     }
-  ]
+  ],
+  "build_revision": 1
 }

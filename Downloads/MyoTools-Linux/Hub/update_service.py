@@ -51,6 +51,16 @@ def inspect(root: Path = updater.ROOT) -> dict:
     """Return only local information; never contacts GitHub."""
     root = root.absolute()
     record = operation(root)
+    if (record and record["status"] in WAITING and record.get("worker_pid")
+            and not updater._pid_alive(record["worker_pid"])):
+        # The worker may have completed between the first read and the PID check.
+        latest = operation(root)
+        if latest and latest.get("id") == record.get("id") and latest["status"] in WAITING:
+            record = {**latest, "status": "error",
+                      "details": "The maintenance worker exited before completing. Inspect Hub/runtime/updates/worker-" + latest["id"] + ".log; an active transaction must be recovered before retrying."}
+            _write_operation(root, record)
+        else:
+            record = latest
     busy = bool(record and record["status"] in WAITING)
     updates = root / "Hub" / "runtime" / "updates"
     last = updates / "last-update.json"
@@ -59,6 +69,7 @@ def inspect(root: Path = updater.ROOT) -> dict:
     updater._assert_unlinked(active, root)
     return {
         "installed": updater.current_version(root),
+        "build_revision": updater.build_revision(updater._installed_metadata(root)),
         "channel": updater.current_channel(root),
         "platform": updater.PLATFORM,
         "install_enabled": not busy and not active.exists(),
@@ -154,10 +165,15 @@ def queue(root: Path, action: str, hub_pid: int, python_executable: str,
     command = [python_executable, str(stage), "--root", str(root), "--job", job["id"]]
     try:
         with logfile.open("ab") as output:
-            subprocess.Popen(
+            process = subprocess.Popen(
                 command, cwd=root, stdin=subprocess.DEVNULL, stdout=output,
                 stderr=subprocess.STDOUT, close_fds=True,
                 creationflags=flags, start_new_session=(os.name != "nt"))
+        if isinstance(process.pid, int):
+            latest = operation(root)
+            if latest and latest.get("id") == job["id"] and latest["status"] in WAITING:
+                latest["worker_pid"] = process.pid
+                _write_operation(root, latest)
     except (OSError, subprocess.SubprocessError) as exc:
         job["status"] = "error"
         job["details"] = "Could not start the maintenance process: " + str(exc)

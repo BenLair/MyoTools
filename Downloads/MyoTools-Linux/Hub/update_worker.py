@@ -24,6 +24,7 @@ def perform(root: Path, job_id: str) -> int:
         raise updater.UpdateError("Missing or inconsistent maintenance job")
     hub_pid = state["hub_pid"]
     tool_pids = state["tool_pids"]
+    state["worker_pid"] = os.getpid()
     state["status"] = "waiting"
     update_service._write_operation(root, state)
 
@@ -55,7 +56,7 @@ def perform(root: Path, job_id: str) -> int:
     update_service._write_operation(root, state)
     # Reuse the same Python executable already used to start the Hub.
     # This avoids recreating Conda or touching the models.
-    launch = [sys.executable, str(root / "Hub" / "launcher.py")]
+    launch = [sys.executable, str(root / "Hub" / "launcher.py"), "--after-update"]
     flags = (getattr(subprocess, "DETACHED_PROCESS", 0) |
              getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)) if os.name == "nt" else 0
     with (root / "Hub" / "runtime" / "updates" / "restart.log").open("ab") as log:
@@ -63,7 +64,7 @@ def perform(root: Path, job_id: str) -> int:
                          stdout=log, stderr=subprocess.STDOUT, close_fds=True,
                          creationflags=flags, start_new_session=(os.name != "nt"))
     state["status"] = "complete"
-    state["details"] = "Update completed; a fresh MyoTools Hub was started."
+    state["details"] = "Update files were installed; Hub restart requested. If no window opens, inspect Hub/runtime/updates/restart.log."
     update_service._write_operation(root, state)
     return 0
 

@@ -667,7 +667,7 @@ if __name__=="__main__":
         with ThreadingHTTPServer(("127.0.0.1",0),Handler) as server:
             url="http://127.0.0.1:%d/" % server.server_port
             print("MyoTools Hub: "+url+"\nClose this window to stop.",flush=True)
-            if "--no-browser" not in sys.argv:webbrowser.open(url)
+            if "--no-browser" not in sys.argv:webbrowser.open(url + "updates" if "--after-update" in sys.argv else url)
             try:server.serve_forever(poll_interval=0.35)
             except KeyboardInterrupt:pass
             finally:stop()

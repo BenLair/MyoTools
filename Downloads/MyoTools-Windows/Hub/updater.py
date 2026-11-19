@@ -66,6 +66,14 @@ def version(value: str) -> tuple[int, int, int]:
     return tuple(int(x) for x in match.groups())
 
 
+def build_revision(data: dict) -> int:
+    """Support verified maintenance builds without changing the suite version."""
+    value = data.get("build_revision", 0)
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise UpdateError("Invalid distribution build revision")
+    return value
+
+
 def _channel(data: dict) -> str:
     """Older unmarked distributions are stable by default."""
     channel = data.get("update_channel", "main") if isinstance(data, dict) else None
@@ -94,6 +102,7 @@ def _installed_metadata(root: Path) -> dict:
     if not isinstance(data, dict):
         raise UpdateError("Invalid installed metadata")
     version(data.get("suite_version"))
+    build_revision(data)
     _channel(data)
     _trusted_source(data)
     return data
@@ -232,13 +241,14 @@ def check(root: Path = ROOT) -> dict:
     remote = _manifest(raw_manifest, PLATFORM)
     branch = update_policy.BRANCH if channel == update_policy.CHANNEL else channel
     result = {"channel": channel, "branch": branch, "repository": REPO, "commit": commit,
-              "installed": installed["suite_version"], "latest": remote["suite_version"]}
+              "installed": installed["suite_version"], "latest": remote["suite_version"],
+              "installed_revision": build_revision(installed), "latest_revision": build_revision(remote)}
     if (_channel(remote) != channel or
             remote.get("update_repository") != installed.get("update_repository") or
             remote.get("update_branch") != installed.get("update_branch")):
         return {**result, "status": "not-ready",
                 "message": "The remote distribution declares a different update channel or repository"}
-    if version(remote["suite_version"]) <= version(installed["suite_version"]):
+    if (version(remote["suite_version"]), build_revision(remote)) <= (version(installed["suite_version"]), build_revision(installed)):
         return {**result, "status": "up-to-date"}
     sums = _repo_bytes("Downloads/SHA256SUMS.txt", commit, 4096)
     expected = _checksum(sums, ASSET)
@@ -287,6 +297,7 @@ def _manifest(raw: bytes, platform: str) -> dict:
             data.get("platform") != platform or not isinstance(data.get("sha256"), dict)):
         raise UpdateError("Invalid distribution manifest or platform")
     version(data.get("suite_version"))
+    build_revision(data)
     _channel(data)
     _trusted_source(data)
     hashes = data["sha256"]
@@ -354,8 +365,8 @@ def plan(archive: Path, digest: str, root: Path = ROOT) -> dict:
     root = root.absolute()
     old = _read_installed(root)
     new, files, modes = _read_zip(archive, digest, root)
-    if version(new["suite_version"]) <= version(old["suite_version"]):
-        raise UpdateError("An update must be newer than the installed suite")
+    if (version(new["suite_version"]), build_revision(new)) <= (version(old["suite_version"]), build_revision(old)):
+        raise UpdateError("An update must have a newer suite version or build revision")
     if (_channel(new) != _channel(old) or
             new.get("update_repository") != old.get("update_repository") or
             new.get("update_branch") != old.get("update_branch")):
@@ -451,11 +462,52 @@ def _pid_alive(pid: int) -> bool:
         return '"' + str(pid) + '"' in result.stdout
     try:
         os.kill(pid, 0)
+        if sys.platform.startswith("linux"):
+            try:
+                state = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()[0]
+                if state in ("Z", "X"):
+                    return False
+            except (OSError, IndexError):
+                pass
         return True
     except ProcessLookupError:
         return False
     except PermissionError:
         return True
+
+
+def _process_started_at(pid: int) -> float | None:
+    """Read the OS process birth time; unknown identities remain protected."""
+    try:
+        if os.name == "nt":
+            command = ("((Get-Process -Id %d -ErrorAction Stop).StartTime.ToUniversalTime()"
+                       ".Subtract([datetime]'1970-01-01')).TotalSeconds.ToString("
+                       "[Globalization.CultureInfo]::InvariantCulture)") % pid
+            result = subprocess.run(["powershell.exe", "-NoProfile", "-Command", command],
+                                    capture_output=True, text=True, timeout=5, check=False)
+            return float(result.stdout.strip()) if result.returncode == 0 else None
+        if sys.platform.startswith("linux"):
+            # The executable name may contain spaces or parentheses.
+            fields = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()
+            ticks = int(fields[19])  # Field 22: ticks since boot.
+            boot = next(int(line.split()[1]) for line in Path("/proc/stat").read_text().splitlines()
+                        if line.startswith("btime "))
+            return boot + ticks / os.sysconf("SC_CLK_TCK")
+    except (OSError, ValueError, IndexError, StopIteration, subprocess.SubprocessError):
+        pass
+    return None
+
+
+def _marker_is_active(marker: Path) -> bool:
+    pid = int(marker.read_text(encoding="utf-8").strip())
+    if not _pid_alive(pid):
+        return False
+    started = _process_started_at(pid)
+    # Allow for the one-second boot timestamp resolution and clock rounding.
+    # A process born clearly after the marker cannot be its original owner.
+    if started is not None and started > marker.stat().st_mtime + 2.0:
+        return False
+    return True
 
 
 def _hub_running(root: Path) -> bool:
@@ -469,7 +521,7 @@ def _hub_running(root: Path) -> bool:
         if not marker.is_file():
             continue
         try:
-            if _pid_alive(int(marker.read_text(encoding="utf-8").strip())):
+            if _marker_is_active(marker):
                 return True
         except (OSError, ValueError):
             raise UpdateError("Cannot validate the MyoTools Hub session marker")
@@ -746,31 +798,33 @@ def main() -> int:
     mode.add_argument("--rollback", action="store_true")
     mode.add_argument("--recover", action="store_true", help="Restore the previous version after interrupted apply or rollback")
     parser.add_argument("--sha256", help="SHA-256 reported by the installed distribution channel (mandatory for --apply)")
+    parser.add_argument("--root", type=Path, default=ROOT, help="Official installation to update (for verified repair).")
     args = parser.parse_args()
+    root = args.root.absolute()
     try:
         if args.check:
-            result = check()
+            result = check(root)
         elif args.download:
-            result = download()
+            result = download(root)
         elif args.apply:
             if not args.sha256:
                 parser.error("--apply requires --sha256 matching GitHub Downloads on the installed channel")
-            preview = plan(args.apply, args.sha256)
+            preview = plan(args.apply, args.sha256, root)
             print(json.dumps({key: preview[key] for key in ("old_version", "new_version", "replace", "remove")}, indent=2))
             if input("Type " + CONFIRMATION + " to install this update: ") != CONFIRMATION:
                 print("Cancelled. No files changed.")
                 return 0
-            result = apply(args.apply, args.sha256)
+            result = apply(args.apply, args.sha256, root)
         elif args.rollback:
             if input("Type " + CONFIRMATION + " to restore the previous version: ") != CONFIRMATION:
                 print("Cancelled. No files changed.")
                 return 0
-            result = rollback()
+            result = rollback(root)
         else:
             if input("Type " + CONFIRMATION + " to recover an interrupted transaction: ") != CONFIRMATION:
                 print("Cancelled. No files changed.")
                 return 0
-            result = recover()
+            result = recover(root)
         print(json.dumps(result, indent=2))
         return 0
     except (UpdateError, ValueError, KeyError, OSError, json.JSONDecodeError) as exc:

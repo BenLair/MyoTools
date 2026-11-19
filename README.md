@@ -42,6 +42,18 @@ The updater preserves Conda environments, downloaded models, and scientific data
 
 Updates and rollback remain subject to platform and process-safety limitations. Preserve copies of valuable data and verify complex analyses before relying on a newer version.
 
+## Updater maintenance correction
+
+Suite **0.4.9**, maintenance build **1**, fixes false active-Hub reports caused by recycled process IDs and improves maintenance status reporting. Application algorithms and dependency specifications are unchanged. A live process with an unknown creation time remains protected.
+
+The original 0.4.9 updater cannot discover a correction with the same suite version. If your updater is blocked, close the Hub and all analysis windows. Download [repair_update.py](repair_update.py) from this repository and run it with Python against your existing extracted installation:
+
+```bash
+python3 /path/to/repair_update.py --root /mnt/ssd/MyoTools-Linux
+```
+
+On Windows, use `python` and your installation path. The helper verifies the archive and manifest from the official update origin, stages the verified updater temporarily, and asks you to type `UPDATE MYOTOOLS`. Reopen the Hub after it finishes. It preserves the usual checks for active Hubs, locally modified files and interrupted transactions, plus rollback backups. Do not delete PID markers or overwrite managed files manually. If the helper reports an error, retain its full output and the logs in `Hub/runtime/updates/`.
+
 ## Integrity and requirements
 
 [SHA256SUMS.txt](Downloads/SHA256SUMS.txt) lists the ZIP checksums. Every archive contains a `DISTRIBUTION.json` manifest with the suite version, stable update source, and per-file SHA-256 values.
