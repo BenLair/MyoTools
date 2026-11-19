@@ -32,6 +32,65 @@ MODEL_LOCK = threading.Lock()
 UPDATE_LOCK = threading.Lock()
 UPDATE_TOKEN = secrets.token_urlsafe(32)
 UPDATE_SHUTDOWN = False
+HUB_TOKEN = secrets.token_urlsafe(32)
+INSTANCE_TOKEN = secrets.token_urlsafe(32)
+
+def _lock_instance(stream):
+    """Lock one byte for the life of this Hub; the OS releases it on exit."""
+    stream.seek(0)
+    if ON_WINDOWS:
+        import msvcrt
+        try:
+            msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+            return True
+        except OSError:
+            return False
+    import fcntl
+    try:
+        fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return True
+    except BlockingIOError:
+        return False
+
+def open_instance(root: Path):
+    """Return an owned lock or the authenticated URL of the running Hub."""
+    runtime = root / 'Hub' / 'runtime'
+    updater._assert_unlinked(runtime, root)
+    runtime.mkdir(parents=True, exist_ok=True)
+    path = runtime / 'hub-instance.lock'
+    updater._assert_unlinked(path, root)
+    stream = os.fdopen(os.open(path, os.O_RDWR | os.O_CREAT, 0o600), 'r+b')
+    if not path.stat().st_size:
+        stream.write(b' '); stream.flush()
+    if _lock_instance(stream):
+        return stream, None
+    # A concurrent first launch may not yet have published its endpoint.
+    for _ in range(30):
+        try:
+            stream.seek(1)
+            record = json.loads(stream.read().decode('utf-8'))
+            port, token = record['port'], record['token']
+            if not isinstance(port, int) or not 1 <= port <= 65535 or not isinstance(token, str):
+                raise ValueError('Invalid Hub endpoint')
+            url = 'http://127.0.0.1:%d/' % port
+            with urlopen(url + 'api/hub/identity', timeout=0.5) as response:
+                identity = json.load(response)
+            if (identity.get('token') == token and identity.get('root') == str(root.resolve())):
+                stream.close()
+                return None, url
+        except (OSError, ValueError, KeyError, TypeError, URLError):
+            pass
+        time.sleep(0.1)
+    stream.close()
+    raise RuntimeError('A Hub is already starting or its local endpoint cannot be verified. Close it before retrying.')
+
+def publish_instance(stream, port):
+    record = json.dumps({'port': port, 'token': INSTANCE_TOKEN}).encode('utf-8')
+    stream.seek(1); stream.write(record); stream.truncate(); stream.flush()
+
+def running_names():
+    return [APPS[key].name for key, record in RUNNING.items()
+            if key in APPS and record['process'].poll() is None]
 
 def conda_command():
     saved = ROOT / "Hub" / "runtime" / "conda_path.txt"
@@ -187,6 +246,7 @@ a{color:inherit}
 .top-link{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;text-decoration:none;color:#54427e;font-size:14px;font-weight:650;padding:10px 14px;border-radius:11px;border:1px solid #e7dff7;background:#fbfaff;transition:background .2s,border-color .2s}
 .top-link:hover{background:#f0eaff;border-color:#cdbbf4;color:#5431b5}
 .top-link:focus-visible{outline:3px solid #7951eb;outline-offset:3px}
+.quit-hub{font:inherit;cursor:pointer}
 .version-pill{padding:8px 11px;border-radius:10px;background:#f2edff;color:#6440b2;font-size:12px;font-weight:700;white-space:nowrap}
 .top-link svg{display:block;width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
@@ -279,6 +339,7 @@ def homepage():
 '<nav class="top-links" aria-label="Project links">' +
 '<a class="top-link" href="/updates">Check for updates</a>' +
     '<a class="top-link" href="/models">Models</a>' +
+'<button class="top-link quit-hub" type="button" id="quit-hub">Quit MyoTools</button>' +
 '<a class="top-link" href="https://github.com/' + html.escape(updater.REPO, quote=True) + '" target="_blank" rel="noopener noreferrer" aria-label="MyoTools repository on GitHub">' +
 '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.4-6-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 5.77 5.07 5.07 0 0 0 19.91 2S18.73 1.65 16 4.48a13.38 13.38 0 0 0-7 0C6.27 1.65 5.09 2 5.09 2A5.07 5.07 0 0 0 5 5.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 19.13V22"/></svg>' +
 'GitHub</a>' +
@@ -287,6 +348,24 @@ def homepage():
 'Contact</a></nav></header>' +
 '<main>' + ''.join(bands) + '</main><footer class="foot">MyoTools · Local microscopy analysis · <a href="/uninstall">Uninstall MyoTools</a></footer>' +
 """<script>
+const hubToken=""" + json.dumps(HUB_TOKEN) + """;
+document.getElementById('quit-hub').addEventListener('click',async()=>{
+ const button=document.getElementById('quit-hub');button.disabled=true;
+ try{
+  const info=await fetch('/api/hub/running',{cache:'no-store'});
+  if(!info.ok)throw Error('Could not check running applications.');
+  const state=await info.json();
+  const names=state.applications||[];
+  const message=names.length ? 'These applications are still open: '+names.join(', ')+
+    '. Save your work before closing MyoTools. Close them and quit?' : 'Quit MyoTools?';
+  if(!window.confirm(message)){button.disabled=false;return;}
+  const response=await fetch('/api/hub/quit',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({token:hubToken,confirmed_running:names.length>0})});
+  const result=await response.json();
+  if(!response.ok)throw Error(result.error||'Could not quit MyoTools.');
+  document.body.innerHTML='<main style="display:block;padding:40px"><h1>MyoTools closed</h1><p>You can close this browser tab.</p></main>';
+ }catch(error){window.alert(String(error));button.disabled=false;}
+});
 async function refresh(){
  try{
   const r=await fetch('/api/status',{cache:'no-store'});
@@ -497,6 +576,13 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers();self.wfile.write(raw)
     def do_GET(self):
         path=self.path.split("?",1)[0]
+        if path in ('/api/hub/identity', '/api/hub/running'):
+            if not self.local_request():
+                return self.reply(403, json.dumps({'error':'Local origin required'}), 'application/json')
+            if path.endswith('identity'):
+                return self.reply(200, json.dumps({'token': INSTANCE_TOKEN, 'root': str(ROOT.resolve())}), 'application/json')
+            with LOCK:
+                return self.reply(200, json.dumps({'applications': running_names()}), 'application/json')
         if path in ("/updates", "/api/updates/status"):
             if not self.local_request():
                 return self.reply(403,"Local origin required","text/plain")
@@ -539,6 +625,33 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         global UNINSTALLING, UPDATE_SHUTDOWN
         path=self.path.split("?",1)[0]
+        if path == '/api/hub/quit':
+            if not self.local_request() or self.headers.get('Content-Type') != 'application/json':
+                return self.reply(403, json.dumps({'error':'Local JSON request required'}), 'application/json')
+            try:
+                length = int(self.headers.get('Content-Length', '0'))
+                if not 0 < length <= 2048: raise ValueError('Invalid request length')
+                payload = json.loads(self.rfile.read(length))
+                if not isinstance(payload, dict) or not isinstance(payload.get('token'), str) or not secrets.compare_digest(payload['token'], HUB_TOKEN):
+                    raise ValueError('Valid session token required')
+            except (ValueError, TypeError) as exc:
+                return self.reply(400, json.dumps({'error':str(exc)}), 'application/json')
+            if not UPDATE_LOCK.acquire(blocking=False):
+                return self.reply(409, json.dumps({'error':'Maintenance is in progress.'}), 'application/json')
+            try:
+                with LOCK:
+                    if UNINSTALLING or UPDATE_SHUTDOWN:
+                        return self.reply(409, json.dumps({'error':'Maintenance is in progress.'}), 'application/json')
+                    if running_names() and payload.get('confirmed_running') is not True:
+                        return self.reply(409, json.dumps({'error':'Applications are running. Save your work and confirm again.'}), 'application/json')
+                    UPDATE_SHUTDOWN = True
+                def close_hub():
+                    time.sleep(0.3)
+                    self.server.shutdown()
+                threading.Thread(target=close_hub, daemon=True).start()
+                return self.reply(200, json.dumps({'status':'closing'}), 'application/json')
+            finally:
+                UPDATE_LOCK.release()
         if path in ("/api/updates/check", "/api/updates/download",
                     "/api/updates/install", "/api/updates/rollback"):
             if not self.local_request() or self.headers.get("Content-Type") != "application/json":
@@ -658,6 +771,16 @@ if __name__=="__main__":
         print("Conda:",conda_command() or "NOT FOUND")
         for item in TOOLS:print(item.name+": "+status(item)["message"])
         sys.exit(0)
+    try:
+        instance, existing = open_instance(ROOT)
+    except (OSError, RuntimeError, updater.UpdateError) as exc:
+        print('MyoTools Hub: ' + str(exc), file=sys.stderr, flush=True)
+        sys.exit(1)
+    if existing:
+        target = existing + ('updates' if '--after-update' in sys.argv else '')
+        print('MyoTools Hub already running: ' + target, flush=True)
+        if '--no-browser' not in sys.argv: webbrowser.open(target)
+        sys.exit(0)
     # Advertise the actual Hub PID so maintenance can refuse active installations.
     runtime = ROOT / "Hub" / "runtime"
     runtime.mkdir(parents=True, exist_ok=True)
@@ -666,6 +789,7 @@ if __name__=="__main__":
     try:
         with ThreadingHTTPServer(("127.0.0.1",0),Handler) as server:
             url="http://127.0.0.1:%d/" % server.server_port
+            publish_instance(instance, server.server_port)
             print("MyoTools Hub: "+url+"\nClose this window to stop.",flush=True)
             if "--no-browser" not in sys.argv:webbrowser.open(url + "updates" if "--after-update" in sys.argv else url)
             try:server.serve_forever(poll_interval=0.35)
@@ -673,4 +797,5 @@ if __name__=="__main__":
             finally:stop()
     finally:
         pid_marker.unlink(missing_ok=True)
+        instance.close()
 

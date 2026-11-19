@@ -2,7 +2,7 @@
 
 **MyoTools** is a suite of four complementary applications for quantitative skeletal muscle imaging. It provides interactive workflows for muscle-fiber segmentation, fiber typing, myonuclear fusion, and myotube surface measurement.
 
-The current stable suite is **v0.4.9**. Pretrained model weights are distributed separately through [GitHub Releases](https://github.com/BenLair/MyoTools/releases); application packages are distributed only through the `Downloads/` folder of this repository.
+The current stable suite is **v0.5.0**. Pretrained model weights are distributed separately through [GitHub Releases](https://github.com/BenLair/MyoTools/releases); application packages are distributed only through the `Downloads/` folder of this repository.
 
 ## Download and install
 
@@ -14,6 +14,10 @@ The current stable suite is **v0.4.9**. Pretrained model weights are distributed
 Each ZIP contains the Hub and all four applications, their configuration, and OS-specific installation scripts. Packages **do not contain** your data, conda environments, or pretrained weights. The first installation downloads the required software dependencies; subsequent software updates do not reinstall unchanged Conda environments.
 
 Always download the ZIP corresponding to your system and extract it completely. Start the Hub using the desktop shortcut or `LAUNCH.sh` / `LAUNCH.bat`.
+
+## Closing MyoTools
+
+Each installation runs one Hub. Opening the shortcut again reopens its existing Hub rather than starting another server. Choose **Quit MyoTools** in the Hub when finished. If applications launched from the Hub are still open, save your work and confirm before they close. Closing a browser tab alone leaves the Hub and its applications running.
 
 ## Applications
 

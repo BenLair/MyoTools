@@ -1,4 +1,4 @@
-# MyoTools v0.4.9 — Windows
+# MyoTools v0.5.0 — Windows
 
 Cette archive contient les quatre applications et tous les fichiers communs
 nécessaires à ce système. Vous n'avez besoin ni de l'autre archive ni du dépôt complet.
@@ -18,6 +18,12 @@ télécharger et vérifier les modèles des releases ; les chemins sont ensuite
 proposés dans MyoSeg, MyoClass et MyoFuse. Le modèle Svetlana est téléchargé
 par l'installateur. MyoSurface ne nécessite pas de modèle externe. Les modèles
 restent hors de cette archive et ne sont pas effacés par la désinstallation.
+
+## Closing MyoTools
+
+Opening this installation again reopens its existing Hub. Select **Quit MyoTools**
+in the Hub to stop it. If applications are still running, save your work and
+confirm before closing them. Closing the browser tab alone leaves the Hub running.
 
 ## Guides d'utilisation
 
@@ -44,4 +50,4 @@ Conservez le dossier d'installation à son emplacement pendant son utilisation.
 | MyoSurface | 1.0.0 |
 
 During use, diagnostic messages appear in the launch terminal and in `Hub/runtime/<application>.log`. Each application log is replaced when the application is launched again. Logs can contain file names and paths; review them before sharing.
-Il s'agit de la distribution de MyoTools v0.4.9 ; voir `DISTRIBUTION.json` pour la référence source.
+Il s'agit de la distribution de MyoTools v0.5.0 ; voir `DISTRIBUTION.json` pour la référence source.

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "suite_version": "0.4.9",
-  "build_revision": 1,
+  "suite_version": "0.5.0",
+  "build_revision": 0,
   "update_channel": "main",
   "update_repository": "BenLair/MyoTools",
   "update_branch": "main",
@@ -31,13 +31,13 @@
   ],
   "sha256": {
     "Hub/app_registry.py": "92ef1d7dbd87528c3ab5d890f16e9e7e20c0fb31baa90179aa1f185d33872b22",
-    "Hub/apps.json": "c2807f5c4e66299690abb02cb6f7f6fcde9aab4903b5de7571d59c6425eb99da",
+    "Hub/apps.json": "160e0fb5c4720349b15eb82fc4fa9ad5dbb2190fcb735861c1449f03eecc25cb",
     "Hub/assets/microscopy-sprite.webp": "fd66333d6570614756c2ab5e8a4f6b3f34f751e233fd0cf3fbaa2e1687c00a15",
     "Hub/assets/myotools-icon.svg": "9c851095f55d804153704e59f8a64e69bcc53c4759aaaf17267f8aa17b1872dd",
     "Hub/check_myotools_env.py": "e53d4c64d53f3ed0f5bf67dd4c134972a2ec043283fc0a379e4ea1f4b2cc5d04",
     "Hub/edition.py": "55cccd7f8c17691abc009e7992d3dbdf708c702ed71c5239499aaa38eddc252b",
     "Hub/installation.py": "95d8149987539c7b75d268f04810238f2c081cfe2071621498bfcd35277a5458",
-    "Hub/launcher.py": "838fd738bdf4bd18b734d92047a97580bf63d2a26e6f3fafd3f9faaa92d29b89",
+    "Hub/launcher.py": "630610fdd52237a793d39916ea556828343f77aaf03a0466e70a64380038b3f9",
     "Hub/model_manager.py": "e6721cd088c6ca2b614ce54451b7bf123818c37f3857022d9c5c4be9add766a3",
     "Hub/platforms/linux/environments/myofuse.yml": "d136d7028971ec3c5b0b2ff50c98e41653d07788d202b32188682f90ad11d481",
     "Hub/platforms/linux/environments/myotools.yml": "ad2ab0ae789e0d2890a11e2b12efa345c4a7cd3be08e9912288ed9bc4afc0c6a",
@@ -68,7 +68,7 @@
     "MyoSeg/MyoSeg_v1.2.0.ipynb": "5d5bca11a2a65d59bf8cffda64ca25dd36827c20c9c8248ffb56db4200628be7",
     "MyoSurface/MyoSurface_How_to_Use.md": "3558c889c3a138a15bfb989dc7c1693503f199683760f1255bbe92d4c2620ce8",
     "MyoSurface/MyoSurface_v1.0.0.ipynb": "37b23eee98af086a468601e8c4696f806ad4251eea7178700822163a91e70d28",
-    "README.md": "aba37db212123dd803162cadb3e6fa7a9e6073512bcfb5ef07fe8a0d1e37b9bb",
+    "README.md": "641786a44804437b7388ac35574f9b96c6c649c141c67e57ab8df4b5e591841a",
     "UNINSTALL.sh": "6113d5b4337ea9628417ff02b94f1048edd5deb428742765f24c6c310bfb7a31"
   }
 }

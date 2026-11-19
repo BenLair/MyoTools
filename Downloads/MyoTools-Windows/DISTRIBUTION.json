@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "suite_version": "0.4.9",
-  "build_revision": 1,
+  "suite_version": "0.5.0",
+  "build_revision": 0,
   "update_channel": "main",
   "update_repository": "BenLair/MyoTools",
   "update_branch": "main",
@@ -31,13 +31,13 @@
   ],
   "sha256": {
     "Hub/app_registry.py": "92ef1d7dbd87528c3ab5d890f16e9e7e20c0fb31baa90179aa1f185d33872b22",
-    "Hub/apps.json": "36ca6cc3428b46c39ec515246302fb7925c9b00e951c8c64bbec4555badcd268",
+    "Hub/apps.json": "d2577a66dca88ec98cd3b7bd520dff69d6055f645989e7574b93a80f04810e70",
     "Hub/assets/microscopy-sprite.webp": "fd66333d6570614756c2ab5e8a4f6b3f34f751e233fd0cf3fbaa2e1687c00a15",
     "Hub/assets/myotools-icon.ico": "ca04d9c5d94390c4c7c07d4a26529260dc2baac26ab99cbaf1dd373f659fe3e0",
     "Hub/check_myotools_env.py": "e53d4c64d53f3ed0f5bf67dd4c134972a2ec043283fc0a379e4ea1f4b2cc5d04",
     "Hub/edition.py": "55cccd7f8c17691abc009e7992d3dbdf708c702ed71c5239499aaa38eddc252b",
     "Hub/installation.py": "95d8149987539c7b75d268f04810238f2c081cfe2071621498bfcd35277a5458",
-    "Hub/launcher.py": "838fd738bdf4bd18b734d92047a97580bf63d2a26e6f3fafd3f9faaa92d29b89",
+    "Hub/launcher.py": "630610fdd52237a793d39916ea556828343f77aaf03a0466e70a64380038b3f9",
     "Hub/model_manager.py": "e6721cd088c6ca2b614ce54451b7bf123818c37f3857022d9c5c4be9add766a3",
     "Hub/platforms/windows/bootstrap_miniforge.ps1": "1cbcc5886cd4d66a57cec823497154f8c541dde49e5b0830db2a45d8f32d4ffb",
     "Hub/platforms/windows/create_shortcut.ps1": "153083a31997355bbbbc5bbf2cd62ba1de385253d28244813444e84bf6bd5de2",
@@ -71,7 +71,7 @@
     "MyoSeg/MyoSeg_v1.2.0.ipynb": "5d5bca11a2a65d59bf8cffda64ca25dd36827c20c9c8248ffb56db4200628be7",
     "MyoSurface/MyoSurface_How_to_Use.md": "3558c889c3a138a15bfb989dc7c1693503f199683760f1255bbe92d4c2620ce8",
     "MyoSurface/MyoSurface_v1.0.0.ipynb": "37b23eee98af086a468601e8c4696f806ad4251eea7178700822163a91e70d28",
-    "README.md": "4f70c69c4cb960a85ccf0790f38a961d92366cb146515eb02c31ec8a7458dad2",
+    "README.md": "2e96dfdc7e16c0327f1cec23a6197fd7639f953e67ff8b0b28d5434b8a026de8",
     "UNINSTALL.bat": "a36bca9d59a25f172d0d2967371d9920a2257c725b366fb58b9c5af4da44fea3"
   }
 }
