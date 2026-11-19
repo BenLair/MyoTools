@@ -11,4 +11,4 @@ Verify your download using [SHA256SUMS.txt](SHA256SUMS.txt). The `DISTRIBUTION.j
 
 Once installed, open the Hub via its desktop shortcut. The **Check for updates** page retrieves subsequent stable versions exclusively from `BenLair/MyoTools` on `main`, verifies the archive, and handles installation after explicit confirmation.
 
-The four application user guides are also included in each ZIP. Conda environments, experimental code, and trained model weights are not embedded in the archive.
+The four application user guides are also included in each ZIP. Conda environments, development history, and trained model weights are not embedded in the archive.

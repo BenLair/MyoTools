@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import edition
 
 from installation import (ALLOWED_ENVIRONMENTS, CONFIRMATION, ROOT,
                           conda_info, environment_prefixes, load_state,
@@ -31,12 +32,13 @@ def shortcut(remove: bool = False) -> dict:
                        str(ROOT / "Hub" / "platforms" / "windows" / "remove_shortcut.ps1"),
                        "-LauncherPath", str(ROOT / "Hub" / "platforms" / "windows" / "launch.bat"),
                        "-LegacyLauncherPath", str(ROOT / "Hub" / "launch_windows.bat"),
-                       "-PreviousLauncherPath", str(ROOT / "Windows" / "launch.bat")]
+                       "-PreviousLauncherPath", str(ROOT / "Windows" / "launch.bat"),
+                       "-Edition", "dev" if edition.dev(ROOT) else "stable"]
             if remove:
                 command.append("-Remove")
             result = subprocess.run(command, check=True, capture_output=True, text=True)
             return {"state": "checked", "message": result.stdout.strip()}
-        path = desktop_linux() / "MyoTools.desktop"
+        path = desktop_linux() / edition.shortcut(ROOT, False)
         # The desktop directory itself can be redirected; the link cannot.
         if path.is_symlink():
             raise RuntimeError("Linked desktop shortcut is protected.")
@@ -86,6 +88,11 @@ def installation_context() -> tuple[dict, Path, list[Path]]:
 
 def plan() -> dict:
     result = {"environments": [], "shortcut": shortcut(), "confirmation": CONFIRMATION}
+    if edition.dev(ROOT):
+        result["environments"] = [{"name": n, "state": "retained",
+                                   "message": "Shared Conda environment; dev cannot remove it."}
+                                  for n in ALLOWED_ENVIRONMENTS]
+        return result
     try:
         state, _, listed = installation_context()
         for name in ALLOWED_ENVIRONMENTS:
@@ -104,6 +111,13 @@ def uninstall(confirmation: str) -> dict:
     if confirmation != CONFIRMATION:
         raise ValueError("Explicit confirmation required: type " + CONFIRMATION)
     result = {"environments": [], "errors": []}
+    if edition.dev(ROOT):
+        with maintenance():
+            result["environments"] = [{"name": n, "state": "retained",
+                                       "message": "Shared Conda environment; never removed by dev."}
+                                      for n in ALLOWED_ENVIRONMENTS]
+            result["shortcut"] = shortcut(remove=True)
+        return result
     with maintenance():
         try:
             state, conda, _ = installation_context()

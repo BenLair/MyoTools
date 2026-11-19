@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "suite_version": "0.4.7",
+  "suite_version": "0.4.9",
   "update_channel": "main",
   "update_repository": "BenLair/MyoTools",
   "update_branch": "main",
@@ -9,8 +9,8 @@
   "applications": [
     {
       "id": "myoseg",
-      "version": "1.1.1",
-      "notebook": "MyoSeg/MyoSeg_v1.1.1.ipynb"
+      "version": "1.2.0",
+      "notebook": "MyoSeg/MyoSeg_v1.2.0.ipynb"
     },
     {
       "id": "myoclass",
@@ -19,8 +19,8 @@
     },
     {
       "id": "myofuse",
-      "version": "1.1.2",
-      "notebook": "MyoFuse/Codes/linux/MyoFuse_linux_v1.1.2.ipynb"
+      "version": "1.1.3",
+      "notebook": "MyoFuse/Codes/linux/MyoFuse_linux_v1.1.3.ipynb"
     },
     {
       "id": "myosurface",
@@ -30,12 +30,13 @@
   ],
   "sha256": {
     "Hub/app_registry.py": "92ef1d7dbd87528c3ab5d890f16e9e7e20c0fb31baa90179aa1f185d33872b22",
-    "Hub/apps.json": "d4d3d732357008cfa9fae2cad493b6bc4ef200d179d45d48ed9a99a4e2fd3a63",
+    "Hub/apps.json": "5d8fb51d62fc0f5759895b9dc2d321653336de7435393d5d33abf834cabaaff7",
     "Hub/assets/microscopy-sprite.webp": "fd66333d6570614756c2ab5e8a4f6b3f34f751e233fd0cf3fbaa2e1687c00a15",
     "Hub/assets/myotools-icon.svg": "9c851095f55d804153704e59f8a64e69bcc53c4759aaaf17267f8aa17b1872dd",
     "Hub/check_myotools_env.py": "e53d4c64d53f3ed0f5bf67dd4c134972a2ec043283fc0a379e4ea1f4b2cc5d04",
+    "Hub/edition.py": "55cccd7f8c17691abc009e7992d3dbdf708c702ed71c5239499aaa38eddc252b",
     "Hub/installation.py": "95d8149987539c7b75d268f04810238f2c081cfe2071621498bfcd35277a5458",
-    "Hub/launcher.py": "d307b32a9a2c653718e288820a4fa00c68c62c7487fc0927843144003d258bde",
+    "Hub/launcher.py": "20f54963f30379819ba884eaf74fa70d098d45ade26b81fb4f657760f2539752",
     "Hub/model_manager.py": "e6721cd088c6ca2b614ce54451b7bf123818c37f3857022d9c5c4be9add766a3",
     "Hub/platforms/linux/environments/myofuse.yml": "d136d7028971ec3c5b0b2ff50c98e41653d07788d202b32188682f90ad11d481",
     "Hub/platforms/linux/environments/myotools.yml": "ad2ab0ae789e0d2890a11e2b12efa345c4a7cd3be08e9912288ed9bc4afc0c6a",
@@ -43,8 +44,8 @@
     "Hub/platforms/linux/launch.sh": "415100e9f40b986ef95752f10226c5af23bbf11834a49bef15c5fdecae45b84a",
     "Hub/platforms/linux/uninstall.sh": "c308500973f13393ee87946f888f2db86513b1906698ccf96809d1edb1ebaebc",
     "Hub/prepare_models.py": "319a4332ff47f43080b7d29cb15107f0616f1ebd8d876b4ceaa29c426700e32b",
-    "Hub/setup_environment.py": "95d013162fc9d3674685691ac54b0810350d275e09ce176c2294750b3801dd09",
-    "Hub/uninstall.py": "7b59497737a89fcb1b86118005e8d1ddb78180218fb61f50cfc0c48185ac2cd4",
+    "Hub/setup_environment.py": "2d3e83c85e79a347d6a5c92f019ca1fc5d8ad130d1af394b28db00cf5d4bad85",
+    "Hub/uninstall.py": "598c63447657df71d1be83e0152be9cf3cb8d5f63a268b144de151107a0d7fe3",
     "Hub/update_page.py": "c9163d0fdc4ba82bd54fb760463bcbf1a5850c74e5399a52bacdaaa2a1bcf428",
     "Hub/update_policy.py": "86c1825a38ab247cc0cc886b98811f95802fc54d001177856fa3e8029b76a59e",
     "Hub/update_service.py": "ad10c7b6adb395d5f9e524927a845e991269cfbefa102a7d6c14bd1eb7b901b8",
@@ -56,15 +57,16 @@
     "MyoClass/Corrections_napari_MyoClass.py": "d7847a48ab13e052464d9696c03a8cda67c06c82ea27d25ca542d5382db12bd8",
     "MyoClass/MyoClass_How_to_Use.md": "2e5f9523e87d71e37c0678ead003f78135c9e1dc7fb6347c53a3417d6e149ba7",
     "MyoClass/MyoClass_v1.0.3.ipynb": "3bd6625ae1d0a96ede8b389158c904caa78a08dbaba5a4c260fca532b317a853",
-    "MyoFuse/Codes/linux/MyoFuse_linux_v1.1.2.ipynb": "bec8258551c21a3e6feff0eb6a066da7faf14424d3c124592a02e639bd41755c",
+    "MyoFuse/Codes/linux/MyoFuse_linux_v1.1.3.ipynb": "0ae8918ff2a59466d4583020fcfed8680e445b82594687b2eef6d7198531cff0",
     "MyoFuse/LICENSE": "fd0ffb582736785f715a184f0c900af2a1bfd0033976000066fb32b4a64c95c1",
     "MyoFuse/Models/Svetlana/Config.json": "125b1455c6e96b15df236dfb667c61fccd9c6de9caa946117b7dca4b183a3b6f",
-    "MyoFuse/MyoFuse_How_to_Use.md": "c1054b105a3a5441a3690878b96275ce7a847a3b20357f15e70c8b868f6a0a5d",
-    "MyoSeg/MyoSeg_How_to_Use.md": "3bcfaca71f69bb1d581a3f32625d1ccd8fd6ecd7c06629400f19dd72366d591f",
-    "MyoSeg/MyoSeg_v1.1.1.ipynb": "15fa5d542a8b0a3c4b8f70b3a147bb896962486b00d6d3ef4c16eb138dab45ac",
+    "MyoFuse/MyoFuse_How_to_Use.md": "6d91e0edd9ee21c42811b5b9d315727a8698c5833367255f3f51cec2939be0e9",
+    "MyoFuse/README.md": "0f480c072fb4abd82bf52502f2a40cc530b87d24637f266e66ec4867b66ab44d",
+    "MyoSeg/MyoSeg_How_to_Use.md": "281f8c25325756306b0887387cd9e544fb9853f5cea6cc8aa12989d8f999d2bd",
+    "MyoSeg/MyoSeg_v1.2.0.ipynb": "5d5bca11a2a65d59bf8cffda64ca25dd36827c20c9c8248ffb56db4200628be7",
     "MyoSurface/MyoSurface_How_to_Use.md": "3558c889c3a138a15bfb989dc7c1693503f199683760f1255bbe92d4c2620ce8",
     "MyoSurface/MyoSurface_v1.0.0.ipynb": "37b23eee98af086a468601e8c4696f806ad4251eea7178700822163a91e70d28",
-    "README.md": "6530f87caca8874bf6b327ed1349341e998f29a8fcb0128bcffe0d9ae0ffc157",
+    "README.md": "aba37db212123dd803162cadb3e6fa7a9e6073512bcfb5ef07fe8a0d1e37b9bb",
     "UNINSTALL.sh": "6113d5b4337ea9628417ff02b94f1048edd5deb428742765f24c6c310bfb7a31"
   }
 }

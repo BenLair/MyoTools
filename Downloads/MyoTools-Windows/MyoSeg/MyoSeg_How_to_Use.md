@@ -1,8 +1,8 @@
-# MyoSeg: How to Use (v1.1.1, Cellpose 3)
+# MyoSeg: How to Use (v1.2.0, Cellpose 3)
 
-This guide describes `MyoSeg_v1.1.1.ipynb`, a Voilà interface for **2D skeletal muscle fiber segmentation and morphometry in fluorescence or RGB H&E images**. MyoSeg uses a custom Cellpose 3 model appropriate to the staining and calculates fiber cross-sectional area (CSA), optional minimum Feret diameter, and size distributions.
+This guide describes `MyoSeg_v1.2.0.ipynb`, a Voilà interface for **2D skeletal muscle fiber segmentation and morphometry in fluorescence or RGB H&E images**. MyoSeg uses a custom Cellpose 3 model appropriate to the staining and calculates fiber cross-sectional area (CSA), optional minimum Feret diameter, and size distributions.
 
-The approved v1.1.1 notebook supports RGB H&E preparation, configurable two-channel or three-channel Cellpose input, and color previews.
+Version 1.2.0 adds independent multi-folder runs. RGB H&E preparation, configurable model channels, calibration, segmentation and morphometry retain the validated 1.1.1 processing logic.
 
 For software installation, see the [MyoTools README and installation guide](../README.md). After extracting the Windows or Linux distribution and running its installer, the simplest way to launch MyoSeg is the MyoTools desktop shortcut. Choose **MyoSeg** on the Hub landing page.
 
@@ -12,7 +12,7 @@ From the **MyoTools repository root**, after installing the shared environment:
 
 ```bash
 conda activate myotools
-voila MyoSeg/MyoSeg_v1.1.1.ipynb
+voila MyoSeg/MyoSeg_v1.2.0.ipynb
 ```
 
 Keep the Voilà terminal running while using the browser interface; press `Ctrl+C` in the terminal when finished. The image folder chooser opens on your **Desktop**; select your image folder there or navigate to another one.
@@ -28,7 +28,7 @@ The model chooser proposes `MyoSeg` for fluorescence and `MyoSeg_HE` when you sw
 
 ## 2. Prepare the image folder
 
-Put source `.tif`, `.tiff`, `.ome.tif`, or `.czi` files in an input folder. Enable **Include subfolders** to process nested directories. Image and file selection is local to the computer running Voilà.
+Put source `.tif`, `.tiff`, `.ome.tif`, or `.czi` files in an input folder. Use **Add folder** to add more input folders, and **Remove folder** on an added row to remove it. Each row has its own optional output path. The same model and settings apply to all folders, which are processed sequentially; each folder keeps a separate workbook, masks, log and checkpoint file. Preview, diameter guide and one-image tests use only the first row. Enable **Include subfolders** to process nested directories within each selected input. Do not add the same input twice or select both a parent and its child. Image and file selection is local to the computer running Voilà.
 
 - **Fluorescence channel, time-point, and Z-plane indices start at 0.** The default fluorescence channel is `3`; change it to match your acquisition. It is ignored in H&E RGB mode.
 - **Process all CZI scenes / TIFF series** is enabled by default. Each selected scene becomes a separate 2D analysis. Disable it to use only the first scene/series.
@@ -40,7 +40,7 @@ For H&E, use an image containing the original red, green and blue components. In
 
 **Scenes, planes and mosaics:** the all-scenes option processes each scene/series exposed by the reader at the selected T/Z position. It does not iterate over all time points, Z planes or pyramid resolution levels. MyoSeg sends each complete prepared 2D scene to Cellpose in one call; this version adds no separate application-level tiling workflow. Inspect the preview and reported dimensions to confirm which field of view your CZI reader returned.
 
-By default, outputs are written to `<input folder>/MyoSeg_results/`. You may enter another **Output folder**. Source images are not overwritten.
+By default, each input writes to its own `<input folder>/MyoSeg_results/`. You may enter a different **Output folder** in each row; the output browser fills only the first row. Inputs and outputs cannot overlap another selected project, and output folders must be distinct. Validation checks the whole list before processing. Source images are not overwritten. Unlike MyoFuse's new-run button, MyoSeg uses its existing **Run / resume analysis** workflow: reselect the same input/output pairs to resume them; choose new output folders to retain a separate run.
 
 ## 3. Choose a workflow
 
@@ -130,12 +130,12 @@ Distributions include an overflow bin for values at or above the specified maxim
 
 1. Click **Preview input** to verify the selected channel, image orientation, and calibration. This displays a preview without running segmentation.
 2. Click **Test first image** to run the selected workflow on one image/scene. This **writes real files and measurements** to the output folder. Inspect the saved mask, not only the downsampled preview.
-3. Click **Run / resume analysis** to process the dataset. For the preparation-only workflow, this button reads **Prepare images**.
-4. Use **Stop after image** to stop safely after the current image/scene. Completed work and checkpoints remain available.
+3. Click **Run / resume analysis** to process every selected folder in order, using the same settings. For the preparation-only workflow, this button reads **Prepare images**.
+4. Use **Stop after image** to stop safely after the current image/scene. The remaining folders are not started. Completed work and checkpoints remain available. A failed image or folder is reported and does not stop later folders unless you request a stop. Review each folder's status and `Tables/Errors.csv`.
 
 MyoSeg stores per-image checkpoints in `Log/checkpoints.json`. On a later run, it checks source files, model information, settings, and intermediate outputs, and **reuses valid stages**. Changing only measurement filters can trigger remeasurement without repeating segmentation. Enable **Recompute existing outputs (ignore checkpoints)** to force processing again.
 
-Image type and RGB model/channel settings are included in these checks. Updating from v1.0.0 invalidates the relevant cached stages through the application version; expect recomputation. Use separate output folders for fluorescence and H&E analyses if you want to retain both sets of results.
+This folder-only update retains the 1.1.1 pipeline signature so unchanged results from that version remain reusable. Image type and RGB model/channel settings are included in these checks. Updating from v1.0.0 invalidates the relevant cached stages through the application version; expect recomputation. Use separate output folders for fluorescence and H&E analyses if you want to retain both sets of results.
 
 A one-image test or interrupted run can retain valid measurements from previously completed images in its workbook. Check the run summary and `Tables/Errors.csv` rather than assuming all inputs were processed.
 

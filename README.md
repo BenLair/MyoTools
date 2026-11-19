@@ -2,7 +2,7 @@
 
 **MyoTools** is a suite of four complementary applications for quantitative skeletal muscle imaging. It provides interactive workflows for muscle-fiber segmentation, fiber typing, myonuclear fusion, and myotube surface measurement.
 
-The current stable suite is **v0.4.5**. Pretrained model weights are distributed separately through [GitHub Releases](https://github.com/BenLair/MyoTools/releases); application packages are distributed only through the `Downloads/` folder of this repository.
+The current stable suite is **v0.4.9**. Pretrained model weights are distributed separately through [GitHub Releases](https://github.com/BenLair/MyoTools/releases); application packages are distributed only through the `Downloads/` folder of this repository.
 
 ## Download and install
 
@@ -23,6 +23,10 @@ Always download the ZIP corresponding to your system and extract it completely. 
 | **MyoClass** | Assign muscle-fiber types and quantify marker patterns using automatic, manual, and inferred marker modes | [How to use MyoClass](MyoClass/MyoClass_How_to_Use.md) |
 | **MyoFuse** | Identify and classify nuclei and estimate myotube fusion index from in vitro microscopy | [How to use MyoFuse](MyoFuse/MyoFuse_How_to_Use.md) |
 | **MyoSurface** | Calculate myotube coverage using corrected images, threshold previews, masks, and CSV exports | [How to use MyoSurface](MyoSurface/MyoSurface_How_to_Use.md) |
+
+## Current workflows
+
+MyoSeg supports independent multi-folder queues, with a separate output directory and workbook for each input. MyoFuse supports independent multi-folder runs with preserved results from previous launches. Preview and one-image tests use the first input folder. See the guides for resume behavior.
 
 ## Models
 
@@ -53,3 +57,14 @@ Choose **Uninstall MyoTools** from the Hub or run the included `UNINSTALL.sh` / 
 [GitHub repository](https://github.com/BenLair/MyoTools) · [Report an issue](https://github.com/BenLair/MyoTools/issues)
 
 The source notebooks and runtime code for each version are bundled in the downloadable packages. See the four user guides above for workflows and output descriptions.
+
+## Included versions
+
+| Application | Version |
+| --- | --- |
+| MyoSeg | 1.2.0 |
+| MyoClass | 1.0.3 |
+| MyoFuse | 1.1.3 |
+| MyoSurface | 1.0.0 |
+
+Multi-folder orchestration and exports are covered by synthetic tests. Cellpose inference, GPU memory behavior and interactive operation must be checked on representative images and the target operating system. The optional MyoFuse GPU + CPU reconstruction mode remains experimental.

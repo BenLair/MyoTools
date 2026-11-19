@@ -1,4 +1,4 @@
-# MyoFuse: How to Use (v1.1.2)
+# MyoFuse: How to Use (v1.1.3)
 
 MyoFuse measures the fusion index (FI) in two-channel fluorescence images of myotube cultures. It uses Cellpose to segment nuclei and the Svetlana classifier to identify nuclei inside myotubes. The Linux and Windows notebooks implement the same workflow; use the notebook supplied for your operating system. See the [MyoTools README](../README.md) for installation and the [MyoFuse project README](README.md) for the publication and citation.
 
@@ -7,10 +7,10 @@ MyoFuse measures the fusion index (FI) in two-channel fluorescence images of myo
 Download and extract the [complete ZIP for your operating system](../Downloads/README.md), run `INSTALL.bat` (Windows) or `bash INSTALL.sh` (Linux), and open the MyoTools desktop shortcut. Choose **MyoFuse** in the Hub. For manual startup, activate `myofuse_env`, start from the MyoTools root, and run the appropriate command:
 
 ```bash
-voila MyoFuse/Codes/linux/MyoFuse_linux_v1.1.2.ipynb
+voila MyoFuse/Codes/linux/MyoFuse_linux_v1.1.3.ipynb
 ```
 
-On Windows, use `voila MyoFuse/Codes/windows/MyoFuse_win_v1.1.2.ipynb` instead. Leave the Voilà terminal running during analysis.
+On Windows, use `voila MyoFuse/Codes/windows/MyoFuse_win_v1.1.3.ipynb` instead. Leave the Voilà terminal running during analysis.
 
 Before opening MyoFuse, select **Models** in the Hub and download **MyoNuclei**. The Hub verifies the release file's size and SHA-256 and saves it at `Hub/runtime/models/MyoNuclei`; the notebook then proposes this path. The installer fetches the separate **Svetlana** classifier at `MyoFuse/Models/Svetlana/MyoFuse.pth`. Its `Config.json` must stay in the same folder. Both file selectors let you choose another model if needed. If you download a model while the notebook is already open, reopen the application to see its new default path.
 
@@ -18,7 +18,7 @@ The models are downloaded separately from the Windows/Linux ZIPs and are kept wh
 
 ## 2. Choose images and stages
 
-In **Choose files**, select a local image folder (initially your Desktop) and check the proposed model paths. Original two-channel `.tif`, `.tiff` and `.czi` images can be split into myotube and nuclear channels. Set **Myotube channel** and **Nuclei channel** using indices starting at **0**. The defaults are `0` and `1`.
+In **Choose files**, select a local image folder (initially your Desktop). Use **Add folder** to add independent folders, and **Remove last** to remove the last row. The same settings and models apply to all folders, which are processed sequentially. Preview and the diameter guide use the first folder. Check the proposed model paths. Original two-channel `.tif`, `.tiff` and `.czi` images can be split into myotube and nuclear channels. Set **Myotube channel** and **Nuclei channel** using indices starting at **0**. The defaults are `0` and `1`.
 
 The stage checkboxes allow you to reuse prepared data:
 
@@ -38,9 +38,9 @@ Use **Show diameter guide** to inspect the diameter on a representative nuclear 
 
 ## 4. Run, resume and inspect results
 
-- **Launch new analysis** starts fresh and backs up a previous `Fusion_index.xlsx` in `Log/` before resetting checkpoints.
-- **Resume analysis** checks stored per-image signatures and outputs, reuses completed stages when inputs and settings still match, and processes missing or changed work.
+- **Launch new analysis** creates a new, uniquely named `MyoFuse_results/run_…/` folder inside each selected image folder. Previous runs and masks are retained.
+- **Resume analysis** chooses the latest `MyoFuse_results/run_…/` for each input folder. If none exists, a legacy project with `Log/` or `Fusion_index.xlsx` is resumed in its original folder. Completed stages are reused when inputs and settings still match. The interface does not yet select an older run explicitly; do not delete or move runs that you need.
 
-The selected image folder contains `Images/`, `Nuclei/`, `Masks/`, optional `Predictions/` and `Normalized_images/`, and `Log/` with checkpoints, image-level results and backups. The final `Fusion_index.xlsx` is written **in the selected image folder**. Its rows report detected nuclei, counts classified inside and outside myotubes, FI (%) and status. Images with no detected nuclei have no numeric FI; failures and skipped images require review in the Voilà status/log output. Do not interpret a partial workbook as a complete batch.
+Each result run contains `Images/`, `Nuclei/`, `Masks/`, optional `Predictions/` and `Normalized_images/`, and `Log/` with independent checkpoints, image-level results and backups. The final `Fusion_index.xlsx` is written **inside that result run**. When splitting is disabled, MyoFuse reads the prepared `Images/` and `Nuclei/` inside the selected source folder; if segmentation is disabled, existing `Masks/` are read from the result run when present, otherwise from the source folder. Legacy projects resumed in place keep their original layout. Its rows report detected nuclei, counts classified inside and outside myotubes, FI (%) and status. Images with no detected nuclei have no numeric FI; failures and skipped images require review in the Voilà status/log output. Do not interpret a partial workbook as a complete batch.
 
 When resuming, retain the intermediate folders and `Log/`. If a source image, a model or relevant parameters have changed, inspect the resulting stage outputs and FI again. The model files and scientific image folders are retained by the MyoTools environment uninstaller; deleting the entire extracted installation folder is a separate action that would also remove locally stored models.

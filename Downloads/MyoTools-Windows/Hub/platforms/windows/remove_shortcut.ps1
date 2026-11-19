@@ -2,12 +2,13 @@ param(
  [Parameter(Mandatory=$true)][string]$LauncherPath,
  [Parameter(Mandatory=$true)][string]$LegacyLauncherPath,
  [Parameter(Mandatory=$true)][string]$PreviousLauncherPath,
- [switch]$Remove
+ [switch]$Remove,
+ [ValidateSet('stable')][string]$Edition = 'stable'
 )
 $ErrorActionPreference = "Stop"
 $desktop = [Environment]::GetFolderPath('DesktopDirectory')
 if (-not $desktop) { throw "Desktop folder could not be found" }
-$shortcut = Join-Path $desktop "MyoTools.lnk"
+$shortcut = Join-Path $desktop 'MyoTools.lnk'
 if (-not (Test-Path -LiteralPath $shortcut)) {
  Write-Output "MyoTools desktop shortcut is absent."
  exit 0

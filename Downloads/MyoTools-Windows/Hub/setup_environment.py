@@ -12,6 +12,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import edition
 from installation import (checked_prefix, environment_prefixes, maintenance,
                           register_created, setup_state, unlinked)
 
@@ -51,7 +52,7 @@ def write_runtime(conda: Path, base_python: Path) -> None:
 
 def desktop_linux() -> Path:
     launcher = HUB / "platforms" / "linux" / "launch.sh"
-    icon = HUB / "assets" / "myotools-icon.svg"
+    icon = HUB / "assets" / ("myotools-icon-dev.svg" if edition.dev(ROOT) else "myotools-icon.svg")
     if not launcher.is_file() or not icon.is_file():
         raise FileNotFoundError("Linux launcher or MyoTools icon is missing.")
 
@@ -76,8 +77,8 @@ def desktop_linux() -> Path:
         "[Desktop Entry]\n"
         "Version=1.0\n"
         "Type=Application\n"
-        "Name=MyoTools\n"
-        "Comment=Muscle image analysis suite\n"
+        "Name=" + edition.name(ROOT) + "\n"
+        "Comment=" + ("Private development edition" if edition.dev(ROOT) else "Muscle image analysis suite") + "\n"
         "Exec=/bin/bash " + escape_command_arg(launcher.resolve()) + "\n"
         "Path=" + str(HUB.resolve()) + "\n"
         "Icon=" + str(icon.resolve()) + "\n"
@@ -85,7 +86,13 @@ def desktop_linux() -> Path:
         "Categories=Science;Education;\n"
         "StartupNotify=true\n"
     )
-    shortcut = desktop / "MyoTools.desktop"
+    shortcut = desktop / edition.shortcut(ROOT, False)
+    if shortcut.exists() or shortcut.is_symlink():
+        # Refuse to replace a shortcut even if its name matches; avoids
+        # shadowing another installation. Updates must be made explicitly.
+        data = shortcut.read_text(encoding="utf-8") if shortcut.is_file() and not shortcut.is_symlink() else ""
+        if "Path=" + str(HUB.resolve()) + "\n" not in data:
+            raise RuntimeError("Desktop shortcut is owned by another installation: " + str(shortcut))
     shortcut.write_text(contents, encoding="utf-8")
     shortcut.chmod(0o755)
     # Some GNOME installations require explicit trust for newly-created desktop launchers.
@@ -103,7 +110,8 @@ def desktop_windows() -> Path:
         raise FileNotFoundError("Windows launcher, shortcut helper or icon is missing.")
     run("powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
         str(helper), "-LauncherPath", str(launcher.resolve()),
-        "-IconPath", str(icon.resolve()))
+        "-IconPath", str(icon.resolve()),
+        "-Edition", "dev" if edition.dev(ROOT) else "stable")
     return launcher
 
 
@@ -111,6 +119,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--conda", type=Path, required=True)
     parser.add_argument("--platform", choices=("windows", "linux"), required=True)
+    parser.add_argument("--reuse-envs-only", action="store_true",
+                        help="Require existing Conda environments and never change them")
     args = parser.parse_args()
     windows = args.platform == "windows"
     conda = args.conda.expanduser().resolve()
@@ -125,10 +135,24 @@ def main() -> int:
         raise FileNotFoundError("Cannot find Conda base Python: " + str(python))
 
     with maintenance():
-        return install(conda, Path(base).resolve(), python.resolve(), windows)
+        return install(conda, Path(base).resolve(), python.resolve(), windows,
+                       reuse_envs_only=args.reuse_envs_only or edition.dev(ROOT))
 
 
-def install(conda: Path, base: Path, python: Path, windows: bool) -> int:
+def install(conda: Path, base: Path, python: Path, windows: bool,
+            reuse_envs_only: bool = False) -> int:
+    if reuse_envs_only:
+        installed = environment_prefixes(conda)
+        for name in ("myotools", "myofuse_env"):
+            if not any(prefix.name.lower() == name for prefix in installed):
+                raise RuntimeError("Missing shared Conda environment " + name +
+                                   ". Install the stable version first.")
+        # No setup_state() and no Conda/pip modifications: this installation
+        # never claims ownership of the stable environment.
+        write_runtime(conda, python)
+        shortcut = desktop_windows() if windows else desktop_linux()
+        print("Read-only shared Conda environments; shortcut ready:", shortcut, flush=True)
+        return 0
     state = setup_state(conda, base, python)
     # Save immediately so standalone uninstallation also works after a later
     # package/model/shortcut failure. Existing environments are never adopted.

@@ -16,6 +16,7 @@ import uninstall as uninstaller
 import updater
 import update_page
 import update_service
+import edition
 
 ROOT = Path(__file__).resolve().parent.parent
 ON_WINDOWS = os.name == "nt"
@@ -271,6 +272,7 @@ def homepage():
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
 <title>MyoTools | Muscle image analysis suite</title><style>""" + STYLE +
+('.mark{background:linear-gradient(135deg,#AAB2BD,#4B5563)}.version-pill{background:#edf0f3;color:#374151}' if edition.dev(ROOT) else '') +
 """</style></head><body><header class="top">""" + logo +
 '<a class="brand" href="/">MyoTools</a><span class="subtitle">Muscle microscopy analysis suite</span>' +
     '<span class="version-pill">v' + html.escape(updater.current_version(ROOT)) + ' · ' + html.escape("STABLE" if updater.current_channel(ROOT) == "main" else "INTERNAL") + '</span>' +
@@ -439,8 +441,7 @@ def uninstallpage():
 .uninstall button:disabled{opacity:.45;cursor:default}.uninstall pre{white-space:pre-wrap;overflow-wrap:anywhere}
 </style></head><body><main class="uninstall"><a href="/">← Back to MyoTools</a>
 <h1>Uninstall MyoTools</h1>
-<p>Only environments created and identified by this installation can be removed:
-<b>myotools</b> and <b>myofuse_env</b>, plus the desktop shortcut pointing here.</p>
+<p>""" + ("This private development installation only removes its own desktop shortcut. Shared Conda environments are always retained." if edition.dev(ROOT) else "Only environments created and identified by this installation can be removed: <b>myotools</b> and <b>myofuse_env</b>, plus the desktop shortcut pointing here.") + """</p>
 <p>Anaconda/Miniforge, notebooks, models and scientific data are kept.
 Pre-existing environments and environments without matching ownership records are retained.</p>
 <p>Save your work and close analysis and review windows before continuing.
